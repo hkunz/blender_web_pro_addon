@@ -9,6 +9,7 @@ from blender_web_pro.operators.file.operator_file_vox_exporter import EXPORT_OT_
 from blender_web_pro.operators.cache.operator_clear_all_temp_cache import register as register_all_temp_cache_operator, unregister as unregister_all_temp_cache_operator # type: ignore
 from blender_web_pro.operators.cache.operator_clear_temp_cache import register as register_temp_cache_operator, unregister as unregister_temp_cache_operator # type: ignore
 from blender_web_pro.operators.operator_test_web import WEB_OT_OperatorTestWeb # type: ignore
+from blender_web_pro.operators.installation.operator_install_choco import WEB_OT_OperatorInstallChoco # type: ignore
 from blender_web_pro.utils.utils import Utils # type: ignore
 from blender_web_pro.utils.object_utils import ObjectUtils # type: ignore
 from blender_web_pro.utils.icons_manager import IconsManager  # type: ignore
@@ -58,6 +59,12 @@ def check_object_selection_change(context, properties, obj):
     pass
 
 class MyPropertyGroup1(bpy.types.PropertyGroup):
+
+    output_directory: bpy.props.StringProperty(
+        name="Output Directory",
+        description="Directory where the voxelized mesh will be saved",
+        subtype='DIR_PATH'
+    ) # type: ignore
 
     my_enum_prop: bpy.props.EnumProperty(
         name="My Enum Prop",
@@ -124,17 +131,18 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
         selected_mesh_objects = [obj for obj in context.selected_objects if obj.type == 'MESH']
         active_object = context.active_object if len(selected_mesh_objects) > 0 and context.active_object in selected_mesh_objects else None
         properties: MyPropertyGroup1 = context.scene.my_property_group_pointer
-        box = layout.box().column()
+        #box = layout.box().column()
 
         # sample props:
-        box.prop(properties, "my_enum_prop")
-        box.prop(properties, "my_float_prop")
-        box.prop(properties, "my_string_prop")
-        box.prop(properties, "my_file_input_prop")
+        #box.prop(properties, "my_enum_prop")
+        #box.prop(properties, "my_float_prop")
+        #box.prop(properties, "my_string_prop")
+        #box.prop(properties, "my_file_input_prop")
 
-        box.label(text="Icon Label", icon=IconsManager.BUILTIN_ICON_MESH_DATA)
+        #box.label(text="Icon Label", icon=IconsManager.BUILTIN_ICON_MESH_DATA)
 
-        self.draw_sample_modifier_exposed_props(context, layout, "GeometryNodes")
+        self.draw_sample_expanded_installation(context, layout)
+        #self.draw_sample_modifier_exposed_props(context, layout, "GeometryNodes")
         self.draw_sample_expanded_options(context, layout)
         self.draw_sample_color_picker(context, layout)
 
@@ -149,6 +157,25 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
             for rna in md.node_group.interface.items_tree:
                 if hasattr(rna, "in_out") and rna.in_out == "INPUT":
                     self.add_layout_gn_prop_pointer(layout, md, rna)
+
+    def draw_sample_expanded_installation(self, context, layout):
+        ebox = layout.box()
+        row = ebox.box().row()
+        row.prop(
+            context.scene, "expanded_installation",
+            icon=IconsManager.BUILTIN_ICON_DOWN if context.scene.expanded_installation else IconsManager.BUILTIN_ICON_RIGHT,
+            icon_only=True, emboss=False
+        )
+        row.label(text="Installation")
+        if context.scene.expanded_installation:
+            properties: MyPropertyGroup1 = context.scene.my_property_group_pointer
+            col = layout.column()
+            col.operator(WEB_OT_OperatorInstallChoco.bl_idname, text="Install Choco")
+            col.prop(properties, "output_directory")
+            #col.prop(data=context.scene.render,property="fps",text="Frame Rate 2") # https://blender.stackexchange.com/questions/317553/how-to-exposure-render-settings-to-addon-panel/317565#317565
+            #self.add_layout_gn_prop(layout, context.object.modifiers["Geometry Nodes"], "Socket_2") # https://blender.stackexchange.com/questions/317571/how-can-i-expose-geometry-nodes-properties-in-my-addon-panel/317586
+            #col.operator(EXPORT_OT_file_vox.bl_idname, text="Export Button")
+            #col.operator(WEB_OT_OperatorTestWeb.bl_idname, text="Test Web")
 
     def draw_sample_expanded_options(self, context, layout):
         ebox = layout.box()
@@ -199,9 +226,11 @@ def register() -> None:
     bpy.utils.register_class(OBJECT_PT_my_addon_panel)
     bpy.utils.register_class(MyPropertyGroup1)
     bpy.utils.register_class(MyPropertyGroup2)
+    bpy.utils.register_class(WEB_OT_OperatorInstallChoco)
     bpy.utils.register_class(WEB_OT_OperatorTestWeb)
     bpy.types.Material.my_slot_setting = bpy.props.PointerProperty(type=MyPropertyGroup2)
     bpy.types.Scene.my_property_group_pointer = bpy.props.PointerProperty(type=MyPropertyGroup1)
+    bpy.types.Scene.expanded_installation = bpy.props.BoolProperty(default=False)
     bpy.types.Scene.expanded_options = bpy.props.BoolProperty(default=False)
     bpy.utils.register_class(OBJECT_OT_OperatorEmpty)
     bpy.utils.register_class(EXPORT_OT_file_vox) # sample file export operator resulting in open dialog
@@ -213,8 +242,10 @@ def unregister() -> None:
     bpy.utils.unregister_class(OBJECT_PT_my_addon_panel)
     bpy.utils.unregister_class(MyPropertyGroup1)
     bpy.utils.unregister_class(MyPropertyGroup2)
+    bpy.utils.unregister_class(WEB_OT_OperatorInstallChoco)
     bpy.utils.unregister_class(WEB_OT_OperatorTestWeb)
     del bpy.types.Material.my_slot_setting
+    del bpy.types.Scene.expanded_installation
     del bpy.types.Scene.expanded_options
     del bpy.types.Scene.my_property_group_pointer
     bpy.utils.unregister_class(OBJECT_OT_OperatorEmpty)
