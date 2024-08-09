@@ -17,21 +17,29 @@ if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
 
 try {
     $nodeVersion = & node --version
+    $npmVersion = & npm --version
+    $npxVersion = & npx --version
     Write-Output "1" # success
     Write-Output "$nodeVersion"
+    Write-Output "$npmVersion"
+    Write-Output "$npxVersion"
     Write-Output "1" # indicate already installed
     return
 } catch {
 }
 
 # When you install Node.js via Chocolatey,
-# it includes both the Node.js runtime and npm, which is the default package manager for Node.js.
+# it includes npx, and both the Node.js runtime and npm, which is the default package manager for Node.js.
 # So after installing Node.js with this command, you should have npm available for managing Node.js packages.
 try {
     choco install -y nodejs-lts
-    $nodeVersion = node --version
+    $nodeVersion = & node --version
+    $npmVersion = & npm --version
+    $npxVersion = & npx --version
     Write-Output "1" # success
-    Write-Output $nodeVersion
+    Write-Output "$nodeVersion"
+    Write-Output "$npmVersion"
+    Write-Output "$npxVersion"
     Write-Output "0" # indicates not previously installed yet
 } catch {
     Write-Output "0" # failure

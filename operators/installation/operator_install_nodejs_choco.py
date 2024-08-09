@@ -26,8 +26,10 @@ class WEB_OT_OperatorInstallNodeJS(bpy.types.Operator):
             create_generic_popup(message=f"NodeJS installation via Chocolatey failed,,CANCEL,,1|{error},,CANCEL,,1|{exception},,CANCEL,,1")
             return
 
-        version = output_lines[1]
-        already_installed = output_lines[2] == "1"
+        node_version = output_lines[1]
+        npm_version = output_lines[2]
+        npx_version = output_lines[3]
+        already_installed = output_lines[4] == "1"
 
         msg = "Unknown State"
         if already_installed:
@@ -35,8 +37,10 @@ class WEB_OT_OperatorInstallNodeJS(bpy.types.Operator):
         elif success:
             msg = f"NodeJS installed successfully"
 
-        print(msg, version)
-        create_generic_popup(message=f"{msg},,CHECKMARK|Version: {version},,CHECKMARK")
+        print(msg, node_version)
+        print("npm version:", npm_version)
+        print("npx version:", npx_version)
+        create_generic_popup(message=f"{msg},,CHECKMARK|node version: {node_version},,CHECKMARK|npm version: {npm_version},,CHECKMARK|npx version: {npx_version},,CHECKMARK")
 
     def execute(self, _context):
         self.install_nodejs_choco()
