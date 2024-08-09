@@ -14,37 +14,36 @@ class WEB_OT_OperatorInstallChoco(bpy.types.Operator):
 
     def install_choco(self):
         script_path = os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-choco.ps1')
-
+        result = None
         try:
-            result = subprocess.run(
-                ["powershell", "-File", script_path],
-                capture_output=True, text=True, check=True
-            )
-            output_lines = result.stdout.splitlines()
-            success = False
-            version = None
-
-            success = output_lines[0] == "1"       # Element 0: 1 for success, 0 for fail
-            version = output_lines[1]              # Element 1: Version string
-            already_installed = output_lines[2] == "1"     # Element 2: 1 if already installed, 0 if newly installed
-            choco_path = output_lines[3]
-
-            return success, version, already_installed, choco_path
+            result = subprocess.run(["powershell", "-File", script_path], capture_output=True, text=True, check=True)
         except subprocess.CalledProcessError as e:
             print(f"Error: {e}")
-            return 0, None, 0, "No Path"
+
+        output_lines = result.stdout.splitlines()
+        success = output_lines[0] == "1"
+        if not success:
+            error = output_lines[1]
+            exception = output_lines[2]
+            create_generic_popup(message=f"Chocolatey installation failed,,CANCEL,,1|{error},,CANCEL,,1|{exception},,CANCEL,,1")
+            return
+
+        version = output_lines[1]
+        already_installed = output_lines[2] == "1"
+        choco_path = output_lines[3]
+        source = output_lines[4]
+
+        msg = "Unknown State"
+        if already_installed:
+            msg = f"Chocolatey already installed"
+        elif success:
+            msg = f"Chocolatey installed successfully"
+
+        print(msg, version)
+        create_generic_popup(message=f"{msg},,CHECKMARK|Version: {version},,CHECKMARK|Path: {choco_path},,CHECKMARK|Info: {source},,CHECKMARK")
 
     def execute(self, _context):
-        success, version, already_installed, choco_path = self.install_choco()
-        if already_installed:
-            print(f"Chocolatey already installed: {version}")
-            #create_generic_popup(message=f"Chocolatey already installed|Version: {version}")
-            create_generic_popup(message=f"Chocolatey is already installed,,CHECKMARK|Version: {version}|Path: {choco_path}|Info: https://community.chocolatey.org/install.ps1")
-        elif success:
-            create_generic_popup(message=f"Chocolatey is installed successfully,,CHECKMARK|Version: {version}|Path: {choco_path}|Info: https://community.chocolatey.org/install.ps1")
-        else:
-            print("Script execution failed.")
-            create_generic_popup(message=f"Chocolatey installation failed,,CANCEL,,1|File:")
+        self.install_choco()
         return {'FINISHED'}
 
     @classmethod
