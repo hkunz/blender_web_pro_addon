@@ -1,18 +1,18 @@
 import bpy
 import bpy_types
 
-from {{ADDON_NAME_PACKAGE}}.utils.temp_file_manager import TempFileManager # type: ignore
-from {{ADDON_NAME_PACKAGE}}.operators.common.operator_generic_popup import OperatorGenericPopup # type: ignore
+from blender_web_pro.utils.temp_file_manager import TempFileManager # type: ignore
+from blender_web_pro.operators.common.operator_generic_popup import OperatorGenericPopup # type: ignore
 
 class FILE_OT_ClearTempCacheOperator(OperatorGenericPopup):
-    bl_idname = "file.{{ADDON_NAME_PACKAGE}}_clear_temp_cache"
-    bl_label = "Clear {{ADDON_NAME}} Cache"
-    bl_description = "Delete temporary {{ADDON_NAME}} directories of current Blender and addon version"
+    bl_idname = "file.blender_web_pro_clear_temp_cache"
+    bl_label = "Clear Blender Web Pro Cache"
+    bl_description = "Delete temporary Blender Web Pro directories of current Blender and addon version"
     bl_options = {'REGISTER'}
 
     def draw(self, context: bpy_types.Context) -> None:
-        self.message = "Delete temporary {{ADDON_NAME}} directories?"
-        self.exec_message = "Deleted temporary {{ADDON_NAME}} directories"
+        self.message = "Delete temporary Blender Web Pro directories?"
+        self.exec_message = "Deleted temporary Blender Web Pro directories"
         super().draw(context)
 
     def execute(self, context:bpy_types.Context) -> set[str]:
