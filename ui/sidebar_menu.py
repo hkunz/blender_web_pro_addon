@@ -11,6 +11,7 @@ from blender_web_pro.operators.cache.operator_clear_temp_cache import register a
 from blender_web_pro.operators.operator_test_web import WEB_OT_OperatorTestWeb # type: ignore
 from blender_web_pro.operators.installation.operator_install_choco import WEB_OT_OperatorInstallChoco # type: ignore
 from blender_web_pro.operators.installation.operator_install_nodejs_choco import WEB_OT_OperatorInstallNodeJS # type: ignore
+from blender_web_pro.operators.installation.operator_install_nvm import WEB_OT_OperatorInstallNVM # type: ignore
 from blender_web_pro.utils.utils import Utils # type: ignore
 from blender_web_pro.utils.object_utils import ObjectUtils # type: ignore
 from blender_web_pro.utils.icons_manager import IconsManager  # type: ignore
@@ -171,8 +172,9 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
         if context.scene.expanded_installation:
             properties: MyPropertyGroup1 = context.scene.my_property_group_pointer
             col = layout.column()
-            col.operator(WEB_OT_OperatorInstallChoco.bl_idname, text="Install Choco")
-            col.operator(WEB_OT_OperatorInstallNodeJS.bl_idname, text="Install NodeJS")
+            col.operator(WEB_OT_OperatorInstallChoco.bl_idname, text="Install Chocolatey")
+            col.operator(WEB_OT_OperatorInstallNodeJS.bl_idname, text="Install Node.js")
+            col.operator(WEB_OT_OperatorInstallNVM.bl_idname, text="Install NVM")
             col.prop(properties, "output_directory")
             #col.prop(data=context.scene.render,property="fps",text="Frame Rate 2") # https://blender.stackexchange.com/questions/317553/how-to-exposure-render-settings-to-addon-panel/317565#317565
             #self.add_layout_gn_prop(layout, context.object.modifiers["Geometry Nodes"], "Socket_2") # https://blender.stackexchange.com/questions/317571/how-can-i-expose-geometry-nodes-properties-in-my-addon-panel/317586
@@ -230,6 +232,7 @@ def register() -> None:
     bpy.utils.register_class(MyPropertyGroup2)
     bpy.utils.register_class(WEB_OT_OperatorInstallChoco)
     bpy.utils.register_class(WEB_OT_OperatorInstallNodeJS)
+    bpy.utils.register_class(WEB_OT_OperatorInstallNVM)
     bpy.utils.register_class(WEB_OT_OperatorTestWeb)
     bpy.types.Material.my_slot_setting = bpy.props.PointerProperty(type=MyPropertyGroup2)
     bpy.types.Scene.my_property_group_pointer = bpy.props.PointerProperty(type=MyPropertyGroup1)
@@ -247,6 +250,7 @@ def unregister() -> None:
     bpy.utils.unregister_class(MyPropertyGroup2)
     bpy.utils.unregister_class(WEB_OT_OperatorInstallChoco)
     bpy.utils.unregister_class(WEB_OT_OperatorInstallNodeJS)
+    bpy.utils.unregister_class(WEB_OT_OperatorInstallNVM)
     bpy.utils.unregister_class(WEB_OT_OperatorTestWeb)
     del bpy.types.Material.my_slot_setting
     del bpy.types.Scene.expanded_installation

@@ -1,4 +1,5 @@
 import subprocess
+import requests
 import json
 import bpy
 
@@ -49,8 +50,18 @@ class OperatorInstallBase(bpy.types.Operator):
         raise NotImplementedError("Subclasses must implement this method")
 
     def execute(self, context):
-        self.execute_script()
+        if self.check_internet():
+            self.execute_script()
+        else:
+            self.report({'ERROR'}, f"No internet connection. Please check your internet connection!")
         return {'FINISHED'}
+
+    def check_internet(self, url='http://www.google.com', timeout=5):
+        try:
+            response = requests.get(url, timeout=timeout)
+            return response.status_code == 200
+        except requests.ConnectionError:
+            return False
 
     @classmethod
     def poll(cls, context):

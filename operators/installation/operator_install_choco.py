@@ -6,7 +6,7 @@ from blender_web_pro.operators.installation.operator_install_base import Operato
 class WEB_OT_OperatorInstallChoco(OperatorInstallBase):
     bl_idname = "web.blender_web_pro_install_choco_operator"
     bl_label = "Install Chocolatey"
-    bl_description = "Install Chocolatey which is a package manager for Windows that simplifies the installation, update, and management of software packages and dependencies."
+    bl_description = "Install Chocolatey which is a package manager for Windows that simplifies the installation, update, and management of software packages and dependencies"
 
     def get_script_path(self):
         return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-choco.ps1')

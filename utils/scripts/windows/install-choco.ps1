@@ -50,6 +50,7 @@ if (Get-Command choco -ErrorAction SilentlyContinue) {
         alreadyInstalled = $true
         chocoPath = $chocoPath
         source = $source
+        commandOutput = @("Chocolatey is already installed!")
     }
     $result | ConvertTo-Json
     return

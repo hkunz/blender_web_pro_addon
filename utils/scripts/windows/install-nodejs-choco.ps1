@@ -1,3 +1,9 @@
+<#
+When you install Node.js via Chocolatey,
+it includes npx, and both the Node.js runtime and npm, which is the default package manager for Node.js.
+So after installing Node.js with this command, you should have npm available for managing Node.js packages.
+#>
+
 try {
     Set-ExecutionPolicy Bypass -Scope Process -Force
     # throw "Simulate Exception Test"
@@ -24,7 +30,7 @@ if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
     return
 }
 
-$nodeVersion = "Unknown nodejs version"
+$nodeVersion = "Unknown Node.js version"
 $npmVersion = "Unknown npm version"
 $npxVersion = "Unknown npx version"
 
@@ -39,6 +45,7 @@ try {
         npmVersion = "$npmVersion"
         npxVersion = "$npxVersion"
         alreadyInstalled = $true
+        commandOutput = @("Node.js is already installed!")
     }
     $result | ConvertTo-Json
     return
