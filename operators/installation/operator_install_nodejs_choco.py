@@ -17,6 +17,8 @@ class WEB_OT_OperatorInstallNodeJS(bpy.types.Operator):
             result = subprocess.run(["powershell", "-File", script_path], capture_output=True, text=True, check=True)
         except subprocess.CalledProcessError as e:
             print(f"Error: {e}")
+            create_generic_popup(message=f"NodeJS installation failed,,CANCEL,,1|{e},,CANCEL,,1")
+            return
 
         output_lines = result.stdout.splitlines()
         success = output_lines[0] == "1"
