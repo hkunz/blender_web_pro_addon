@@ -15,7 +15,7 @@ try {
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    exit 10
+    exit $ERROR_SETTING_EXECUTION_POLICY
 }
 
 # Check if the directory path is provided

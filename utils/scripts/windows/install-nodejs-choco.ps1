@@ -16,7 +16,7 @@ try {
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    exit 10
+    exit $ERROR_SETTING_EXECUTION_POLICY
 }
 
 # Check if Chocolatey is installed
@@ -27,7 +27,7 @@ if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
         exception_full = "Chocolatey is not installed. Chocolatey is required to be installed first."
     }
     $result | ConvertTo-Json
-    exit 16
+    exit $ERROR_CHOCOLATEY_REQUIREMENT_NOT_INSTALLED
 }
 
 $nodeVersion = "Unknown Node.js version"
@@ -74,7 +74,7 @@ try {
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    exit 17
+    exit $ERROR_INSTALLING_NODE_JS
 }
 
 exit $SUCCESS

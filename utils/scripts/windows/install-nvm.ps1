@@ -22,7 +22,7 @@ try {
     $result.exception = $_.Exception.Message
     $result.exception_full = $_.ToString()
     $result | ConvertTo-Json
-    exit 1
+    exit $ERROR_GENERIC
 }
 #>
 
@@ -36,7 +36,7 @@ try {
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    exit 10
+    exit $ERROR_SETTING_EXECUTION_POLICY
 }
 
 # Check if NVM is already installed
@@ -61,7 +61,7 @@ try {
     $result.exception = $_.Exception.Message
     $result.exception_full = $_.ToString()
     $result | ConvertTo-Json
-    exit 18
+    exit $ERROR_DOWNLOADING_NVM_INSTALLER
 }
 
 # Extract the installer
@@ -73,7 +73,7 @@ try {
     $result.exception = $_.Exception.Message
     $result.exception_full = $_.ToString()
     $result | ConvertTo-Json
-    exit 19
+    exit $ERROR_EXTRACTING_NVM_INSTALLER
 }
 
 # Run the installer
@@ -87,7 +87,7 @@ try {
     $result.exception = $_.Exception.Message
     $result.exception_full = $_.ToString()
     $result | ConvertTo-Json
-    exit 20
+    exit $ERROR_RUNNING_NVM_INSTALLER
 }
 
 # Clean up

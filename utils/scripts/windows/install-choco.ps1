@@ -10,7 +10,7 @@ try {
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    exit 10
+    exit $ERROR_SETTING_EXECUTION_POLICY
 }
 
 try {
@@ -22,7 +22,7 @@ try {
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    exit 11
+    exit $ERROR_SETTING_SECURITY_PROTOCOL
 }
 
 $source = "https://community.chocolatey.org/install.ps1"
@@ -41,7 +41,7 @@ if (Get-Command choco -ErrorAction SilentlyContinue) {
             exception_full = $_.ToString()
         }
         $result | ConvertTo-Json
-        exit 12
+        exit $ERROR_RUNNING_INSTALLED_CHOCOLATEY
     }
     $result = @{
         version = $version
@@ -64,7 +64,7 @@ try {
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    exit 13
+    exit $ERROR_DOWNLOADING_CHOCOLATEY
 }
 
 try {
@@ -77,7 +77,7 @@ try {
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    exit 14
+    exit $ERROR_RUNNING_CHOCOLATEY_AFTER_INSTALLATION
 }
 
 try {
@@ -96,7 +96,7 @@ try {
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    exit 15
+    exit $ERROR_UPGRADING_CHOCOLATEY
 }
 
 exit $SUCCESS
