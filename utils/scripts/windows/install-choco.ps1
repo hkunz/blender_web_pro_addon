@@ -6,6 +6,7 @@ try {
         success = $false
         error = "Error setting execution policy!"
         exception = $_.Exception.Message
+        exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
     return
@@ -18,6 +19,7 @@ try {
         success = $false
         error = "Error setting security protocol!"
         exception = $_.Exception.Message
+        exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
     return
@@ -37,6 +39,7 @@ if (Get-Command choco -ErrorAction SilentlyContinue) {
             success = $false
             error = "Error running choco but is installed already!"
             exception = $_.Exception.Message
+            exception_full = $_.ToString()
         }
         $result | ConvertTo-Json
         return
@@ -60,6 +63,7 @@ try {
         success = $false
         error = "Error downloading/executing installation script!"
         exception = $_.Exception.Message
+        exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
     return
@@ -73,6 +77,7 @@ try {
         success = $false
         error = "Error running choco after installation!"
         exception = $_.Exception.Message
+        exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
     return
@@ -93,6 +98,7 @@ try {
         success = $false
         error = "Error upgrading Chocolatey!"
         exception = $_.Exception.Message
+        exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
     return

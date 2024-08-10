@@ -1,53 +1,25 @@
-import subprocess
 import os
-import bpy
 
 from blender_web_pro.operators.common.operator_generic_popup import create_generic_popup # type: ignore
+from blender_web_pro.operators.installation.operator_install_base import OperatorInstallBase # type: ignore
 
-class WEB_OT_OperatorInstallNodeJS(bpy.types.Operator):
-    bl_idname = "web.blender_web_pro_install_nodejs_choco_operator"
-    bl_label = "Install NodeJS LTS"
-    bl_description = "Install Node.js via Chocolatey, which includes both the Node.js runtime and npm, which is the default package manager for Node.js."
-    bl_options = {'INTERNAL'}
+class WEB_OT_OperatorInstallNodeJS(OperatorInstallBase):
+    bl_idname = "web.blender_web_pro_install_nodejs_operator"
+    bl_label = "Install NodeJS"
+    bl_description = "Install NodeJS which is a JavaScript runtime built on Chrome's V8 JavaScript engine."
 
-    def install_nodejs_choco(self):
-        script_path = os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-nodejs-choco.ps1')
-        result = None
-        try:
-            result = subprocess.run(["powershell", "-File", script_path], capture_output=True, text=True, check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"Error: {e}")
-            create_generic_popup(message=f"NodeJS installation failed,,CANCEL,,1|{e},,CANCEL,,1")
-            return
+    def get_script_path(self):
+        return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-nodejs-choco.ps1')
 
-        output_lines = result.stdout.splitlines()
-        success = output_lines[0] == "1"
-        if not success:
-            error = output_lines[1]
-            exception = output_lines[2]
-            create_generic_popup(message=f"NodeJS installation via Chocolatey failed,,CANCEL,,1|{error},,CANCEL,,1|{exception},,CANCEL,,1")
-            return
+    def handle_success(self, result):
+        node_version = result.get("nodeVersion", "Unknown nodejs version")
+        npm_version = result.get("npmVersion", "Unknown npm version")
+        npx_version = result.get("npxVersion", "Unknown npx version")
+        already_installed = result.get("alreadyInstalled", False)
 
-        node_version = output_lines[1]
-        npm_version = output_lines[2]
-        npx_version = output_lines[3]
-        already_installed = output_lines[4] == "1"
-
-        msg = "Unknown State"
+        msg = "NodeJS installed successfully"
         if already_installed:
-            msg = f"NodeJS already installed"
-        elif success:
-            msg = f"NodeJS installed successfully"
+            msg = "NodeJS already installed"
 
-        print(msg, node_version)
-        print("npm version:", npm_version)
-        print("npx version:", npx_version)
-        create_generic_popup(message=f"{msg},,CHECKMARK|node version: {node_version},,CHECKMARK|npm version: {npm_version},,CHECKMARK|npx version: {npx_version},,CHECKMARK")
-
-    def execute(self, _context):
-        self.install_nodejs_choco()
-        return {'FINISHED'}
-
-    @classmethod
-    def poll(cls, _context):
-        return True
+        print(msg, node_version, npm_version, npx_version)
+        create_generic_popup(message=f"{msg},,CHECKMARK|Node Version: {node_version},,CHECKMARK|NPM Version: {npm_version},,CHECKMARK|NPX Version: {npx_version},,CHECKMARK")
