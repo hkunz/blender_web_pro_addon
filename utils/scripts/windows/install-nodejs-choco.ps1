@@ -56,6 +56,7 @@ try {
     $nodeVersion = & node --version
     $npmVersion = & npm --version
     $npxVersion = & npx --version
+    $commandOutput += "Successfully installed Node.js"
     $result = @{
         nodeVersion = $nodeVersion
         npmVersion = $npmVersion

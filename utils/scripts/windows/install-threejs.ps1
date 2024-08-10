@@ -5,6 +5,8 @@ param (
 
 . "$PSScriptRoot\exit-codes.ps1"
 
+
+
 try {
     Set-ExecutionPolicy Bypass -Scope Process -Force
 } catch {
@@ -71,6 +73,7 @@ try {
     npm install --save three | Tee-Object -Variable commandOutput | Out-Null
     $nodeVersion = & node --version
     $npmVersion = & npm --version
+    $commandOutput += "Successfully installed Three.js"
     $result = @{
         nodeVersion = $nodeVersion
         npmVersion = $npmVersion

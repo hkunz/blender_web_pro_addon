@@ -87,6 +87,7 @@ try {
         alreadyInstalled = $false
         chocoPath = $chocoPath
         source = $source
+        commandOutput = @("Successfully installed Chocolatey!")
     }
     $result | ConvertTo-Json
 } catch {

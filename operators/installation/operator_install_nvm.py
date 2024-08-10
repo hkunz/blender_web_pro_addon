@@ -15,9 +15,9 @@ class WEB_OT_OperatorInstallNVM(OperatorInstallBase):
         nvm_version = result.get("nvmVersion", "Unknown NVM version")
         already_installed = result.get("alreadyInstalled", False)
 
-        msg = "NVM installed successfully"
+        msg = "NVM is installed successfully"
         if already_installed:
-            msg = "NVM already installed"
+            msg = "NVM is already installed"
 
         print(msg, nvm_version)
         create_generic_popup(message=f"{msg},,CHECKMARK|nvm version: {nvm_version},,CHECKMARK")

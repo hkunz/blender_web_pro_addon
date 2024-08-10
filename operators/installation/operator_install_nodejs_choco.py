@@ -17,9 +17,9 @@ class WEB_OT_OperatorInstallNodeJS(OperatorInstallBase):
         npx_version = result.get("npxVersion", "Unknown npx version")
         already_installed = result.get("alreadyInstalled", False)
 
-        msg = "Node.js installed successfully"
+        msg = "Node.js is installed successfully"
         if already_installed:
-            msg = "Node.js already installed"
+            msg = "Node.js is already installed"
 
         print(msg, node_version, npm_version, npx_version)
         create_generic_popup(message=f"{msg},,CHECKMARK|Node Version: {node_version},,CHECKMARK|NPM Version: {npm_version},,CHECKMARK|NPX Version: {npx_version},,CHECKMARK")

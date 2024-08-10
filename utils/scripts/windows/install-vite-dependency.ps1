@@ -70,6 +70,7 @@ try {
     npm install --save-dev vite | Tee-Object -Variable commandOutput | Out-Null
     $nodeVersion = & node --version
     $npmVersion = & npm --version
+    $commandOutput += "Successfully installed Vite dependency"
     $result = @{
         nodeVersion = $nodeVersion
         npmVersion = $npmVersion

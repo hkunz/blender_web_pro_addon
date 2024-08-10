@@ -16,6 +16,6 @@ class WEB_OT_OperatorInstallChoco(OperatorInstallBase):
         already_installed = result.get("alreadyInstalled", False)
         choco_path = result.get("chocoPath", "Unknown path")
         source = result.get("source", "Unknown source")
-        msg = "Chocolatey already installed" if already_installed else "Chocolatey installed successfully"
+        msg = "Chocolatey is already installed" if already_installed else "Chocolatey is installed successfully"
         print(msg, version)
         create_generic_popup(message=f"{msg},,CHECKMARK|Version: {version},,CHECKMARK|Path: {choco_path},,CHECKMARK|Info: {source},,CHECKMARK")

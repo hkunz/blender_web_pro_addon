@@ -94,6 +94,7 @@ try {
     $result.commandOutput += "Running the nvm-windows installer..."
     $installOutput = Start-Process -FilePath $installerPath -Wait -PassThru | Tee-Object -Variable installOutput | Out-Null
     $result.commandOutput += $installOutput.StandardOutput
+    $result.commandOutput += "Successfully installed NVM (Node Version Manager)"
     $result.alreadyInstalled = $false
 } catch {
     $result.error = "Failed to run nvm-windows installer"
