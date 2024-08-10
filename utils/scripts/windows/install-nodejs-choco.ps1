@@ -25,7 +25,7 @@ if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
         error = "Chocolatey is required to be installed first!"
     }
     $result | ConvertTo-Json
-    exit $ERROR_CHOCOLATEY_REQUIREMENT_NOT_INSTALLED
+    exit $ERROR_CHOCOLATEY_INSTALLATION_REQUIRED
 }
 
 $nodeVersion = "Unknown Node.js version"

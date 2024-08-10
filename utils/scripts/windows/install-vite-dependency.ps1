@@ -1,6 +1,5 @@
 param (
-    [string]$DirectoryPath,
-    [string]$AnotherArg
+    [string]$DirectoryPath
 )
 
 . "$PSScriptRoot\exit-codes.ps1"
@@ -68,7 +67,7 @@ catch {
 
 try {
     # throw "Simulate Exception Test"
-    npm install --save three | Tee-Object -Variable commandOutput | Out-Null
+    npm install --save-dev vite | Tee-Object -Variable commandOutput | Out-Null
     $nodeVersion = & node --version
     $npmVersion = & npm --version
     $result = @{
@@ -81,12 +80,12 @@ try {
     $result | ConvertTo-Json
 } catch {
     $result = @{
-        error = "Error installing Three.js!"
+        error = "Error installing Vite dependency!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    exit $ERROR_INSTALLING_THREE_JS
+    exit $ERROR_INSTALLING_VITE_DEPENDENCY
 }
 
 exit $SUCCESS

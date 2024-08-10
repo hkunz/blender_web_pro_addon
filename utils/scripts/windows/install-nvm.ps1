@@ -39,6 +39,19 @@ try {
     exit $ERROR_SETTING_EXECUTION_POLICY
 }
 
+try {
+    # throw "Simulate Exception Test"
+    $npmVersion = & npm --version
+} catch {
+    $result = @{
+        error = "No Node.js installed. You need to install it first!"
+        exception = $_.Exception.Message
+        exception_full = $_.ToString()
+    }
+    $result | ConvertTo-Json
+    exit $ERROR_NODE_JS_INSTALLATION_REQUIRED
+}
+
 # Check if NVM is already installed
 try {
     # throw "Simulate Exception Test"
