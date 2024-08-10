@@ -65,7 +65,7 @@ class MyPropertyGroup1(bpy.types.PropertyGroup):
 
     output_directory: bpy.props.StringProperty(
         name="Output Directory",
-        description="Directory where the voxelized mesh will be saved",
+        description="Directory where to install Three.js",
         subtype='DIR_PATH'
     ) # type: ignore
 

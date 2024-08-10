@@ -43,17 +43,27 @@ class OperatorInstallBase(bpy.types.Operator):
             return
         result = self.get_json(output)
         self.handle_success(result)
-        output = result.get("commandOutput", "")
-        output = '\n'.join(output)
-        self.report({'INFO'}, f"{output}")
+        cmd_output = result.get("commandOutput", [])
+        self.report_command_output(cmd_output)
+
+    def report_command_output(self, output_list):
+        for output in output_list:
+            output_str = str(output)
+            lines = output_str.split('\n')
+            for line in lines:
+                if line.strip():  # Optional: Skip empty lines
+                    self.report({'INFO'}, line)
 
     def handle_error(self, stdout, errorCode):
         result = self.get_json(stdout)
         error = result.get("error", "Unknown error")
-        exception = result.get("exception", "No additional information")
-        exception_full = result.get("exception_full", "No additional information")
-        self.report({'ERROR'}, f"{exception_full}")
-        create_generic_popup(message=f"Script execution failed with code {str(errorCode)},,CANCEL,,1|{error},,CANCEL,,1|{exception},,CANCEL,,1")
+        exception = result.get("exception", None)
+        exception_full = result.get("exception_full", None)
+        message = f"Script execution failed with code {str(errorCode)},,CANCEL,,1|{error},,CANCEL,,1"
+        if exception:
+            message += f"|{exception},,CANCEL,,1"
+        create_generic_popup(message=message)
+        self.report({'ERROR'}, f"{exception_full if exception_full else (exception if exception else error)}")
 
     def handle_unknown_error(self, e):
         self.report({'ERROR'}, str(e))

@@ -22,9 +22,7 @@ try {
 # Check if Chocolatey is installed
 if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
     $result = @{
-        error = "Chocolatey is not installed!"
-        exception = "Chocolatey is required to be installed first!"
-        exception_full = "Chocolatey is not installed. Chocolatey is required to be installed first."
+        error = "Chocolatey is required to be installed first!"
     }
     $result | ConvertTo-Json
     exit $ERROR_CHOCOLATEY_REQUIREMENT_NOT_INSTALLED

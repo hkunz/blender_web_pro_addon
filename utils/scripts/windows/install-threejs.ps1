@@ -1,13 +1,12 @@
-. "$PSScriptRoot\exit-codes.ps1"
-
 param (
     [string]$DirectoryPath,
     [string]$AnotherArg
 )
 
+. "$PSScriptRoot\exit-codes.ps1"
+
 try {
     Set-ExecutionPolicy Bypass -Scope Process -Force
-    throw "Simulate Exception Test"
 } catch {
     $result = @{
         error = "Error setting execution policy!"
@@ -20,26 +19,47 @@ try {
 
 # Check if the directory path is provided
 if (-not $DirectoryPath) {
-    Write-Error "No directory path provided. Usage: .\script.ps1 -DirectoryPath 'C:\Path\To\Directory'"
-    exit 1
+    $result = @{
+        error = "No directory path provided!"
+    }
+    $result | ConvertTo-Json
+    exit $ERROR_NO_DIRECTORY_PATH_PROVIDED
 }
 
 # Check if the provided path is a valid directory
 if (-not (Test-Path -Path $DirectoryPath -PathType Container)) {
-    Write-Error "The provided path is not a valid directory: $DirectoryPath"
-    exit 1
+    $result = @{
+        error = "The provided path is not a valid directory:"
+        exception = "$DirectoryPath"
+        exception_full = "The provided path is not a valid directory: $DirectoryPath"
+    }
+    $result | ConvertTo-Json
+    exit $ERROR_INVALID_DIRECTORY_PATH
 }
 
 # Change to the desired directory
-Set-Location -Path $DirectoryPath
+try {
+    Set-Location -Path $DirectoryPath
+}
+catch {
+    $result = @{
+        error = "Failed setting directory"
+        exception = $_.Exception.Message
+        exception_full = $_.ToString()
+    }
+    $result | ConvertTo-Json
+    exit $ERROR_ACCESSING_DIRECTORY
+}
+
 
 try {
-    #throw "Simulate Exception Test"
+    # throw "Simulate Exception Test"
     npm install --save three | Tee-Object -Variable commandOutput | Out-Null
     $npmVersion = & node --version
     $result = @{
         npmVersion = $npmVersion
         alreadyInstalled = $false
+        directoryPath = $DirectoryPath
         commandOutput = $commandOutput
     }
     $result | ConvertTo-Json
@@ -50,7 +70,7 @@ try {
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    return
+    exit $ERROR_INSTALLING_THREE_JS
 }
 
 exit $SUCCESS

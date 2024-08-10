@@ -4,7 +4,7 @@ from blender_web_pro.operators.common.operator_generic_popup import create_gener
 from blender_web_pro.operators.installation.operator_install_base import OperatorInstallBase # type: ignore
 
 class WEB_OT_OperatorInstallNVM(OperatorInstallBase):
-    bl_idname = "web.blender_web_pro_install_nvm_operator"
+    bl_idname = "blender_web_pro.install_nvm_operator"
     bl_label = "Install NVM"
     bl_description = "Install NVM (Node Version Manager) which is a tool for managing multiple versions of Node.js on a single machine, allowing users to easily switch between different versions for different projects"
 
