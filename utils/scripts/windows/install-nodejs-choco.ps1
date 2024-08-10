@@ -1,3 +1,5 @@
+. "$PSScriptRoot\exit-codes.ps1"
+
 <#
 When you install Node.js via Chocolatey,
 it includes npx, and both the Node.js runtime and npm, which is the default package manager for Node.js.
@@ -9,25 +11,23 @@ try {
     # throw "Simulate Exception Test"
 } catch {
     $result = @{
-        success = $false
         error = "Error setting execution policy!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    return
+    exit 10
 }
 
 # Check if Chocolatey is installed
 if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
     $result = @{
-        success = $false
         error = "Chocolatey is not installed!"
         exception = "Chocolatey is required to be installed first!"
         exception_full = "Chocolatey is not installed. Chocolatey is required to be installed first."
     }
     $result | ConvertTo-Json
-    return
+    exit 16
 }
 
 $nodeVersion = "Unknown Node.js version"
@@ -40,7 +40,6 @@ try {
     $npmVersion = & npm --version
     $npxVersion = & npx --version
     $result = @{
-        success = $true
         nodeVersion = "$nodeVersion"
         npmVersion = "$npmVersion"
         npxVersion = "$npxVersion"
@@ -48,7 +47,7 @@ try {
         commandOutput = @("Node.js is already installed!")
     }
     $result | ConvertTo-Json
-    return
+    exit $SUCCESS
 } catch {
     # Proceed with installation if Node.js is not installed yet
 }
@@ -60,7 +59,6 @@ try {
     $npmVersion = & npm --version
     $npxVersion = & npx --version
     $result = @{
-        success = $true
         nodeVersion = $nodeVersion
         npmVersion = $npmVersion
         npxVersion = $npxVersion
@@ -68,13 +66,15 @@ try {
         commandOutput = $commandOutput
     }
     $result | ConvertTo-Json
+    exit $SUCCESS
 } catch {
     $result = @{
-        success = $false
         error = "Error installing Node.js!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    return
+    exit 17
 }
+
+exit $SUCCESS

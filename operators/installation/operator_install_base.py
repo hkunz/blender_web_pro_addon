@@ -11,42 +11,55 @@ class OperatorInstallBase(bpy.types.Operator):
     def get_script_path(self):
         raise NotImplementedError("Subclasses must implement this method")
 
-    def run_script(self, script_path):
+    def get_script_args(self):
+        return []  # Override in subclasses to provide arguments
+
+    def run_script(self, script_path, *args):
         try:
-            result = subprocess.run(["powershell", "-File", script_path], capture_output=True, text=True, check=True)
+            command = ["powershell", "-File", script_path] + list(args)
+            result = subprocess.run(command, capture_output=True, text=True, check=True)
             return result.stdout
         except subprocess.CalledProcessError as e:
-            self.report({'ERROR'}, e)
-            create_generic_popup(message=f"Script execution failed,,CANCEL,,1|{e},,CANCEL,,1")
-            return None
+            if e.returncode >= 10:
+                self.handle_error(e.stdout, e.returncode)
+            else:
+                self.handle_unknown_error(e)
+        return None
 
-    def execute_script(self):
-        script_path = self.get_script_path()
-        output = self.run_script(script_path)
-        if output is None:
-            return
-
+    def get_json(self, raw):
         try:
-            result = json.loads(output)
+            result = json.loads(raw)
+            return result
         except json.JSONDecodeError as e:
             self.report({'ERROR'}, f"JSON decode error: {e}")
             create_generic_popup(message=f"Script execution failed,,CANCEL,,1|Invalid JSON output,,CANCEL,,1")
-            return
+        return None
 
-        if not result.get("success", False):
-            error = result.get("error", "Unknown error")
-            exception = result.get("exception", "No additional information")
-            exception_full = result.get("exception_full", "No additional information")
-            self.report({'ERROR'}, f"{exception_full}")
-            create_generic_popup(message=f"Script execution failed,,CANCEL,,1|{error},,CANCEL,,1|{exception},,CANCEL,,1")
+    def execute_script(self):
+        script_path = self.get_script_path()
+        script_args = self.get_script_args()
+        output = self.run_script(script_path, *script_args)
+        if output is None:
             return
-
+        result = self.get_json(output)
         self.handle_success(result)
         output = result.get("commandOutput", "")
         output = '\n'.join(output)
         self.report({'INFO'}, f"{output}")
 
-    def handle_success(self, result):
+    def handle_error(self, stdout, errorCode):
+        result = self.get_json(stdout)
+        error = result.get("error", "Unknown error")
+        exception = result.get("exception", "No additional information")
+        exception_full = result.get("exception_full", "No additional information")
+        self.report({'ERROR'}, f"{exception_full}")
+        create_generic_popup(message=f"Script execution failed with code {str(errorCode)},,CANCEL,,1|{error},,CANCEL,,1|{exception},,CANCEL,,1")
+
+    def handle_unknown_error(self, e):
+        self.report({'ERROR'}, str(e))
+        create_generic_popup(message=f"Script execution failed with error code {str(e.returncode)},,CANCEL,,1|{e},,CANCEL,,1")
+
+    def handle_success(self, _):
         raise NotImplementedError("Subclasses must implement this method")
 
     def execute(self, context):

@@ -1,10 +1,11 @@
+. "$PSScriptRoot\exit-codes.ps1"
+
 $nvmUrl = "https://github.com/coreybutler/nvm-windows/releases/download/1.1.9/nvm-setup.zip"
 $zipPath = "nvm-setup.zip"
 $installPath = "$env:USERPROFILE\nvm"
 $installerPath = "$installPath\nvm-setup.exe"
 
 $result = @{
-    success = $true
     commandOutput = @()
     error = $null
 }
@@ -21,9 +22,22 @@ try {
     $result.exception = $_.Exception.Message
     $result.exception_full = $_.ToString()
     $result | ConvertTo-Json
-    return
+    exit 1
 }
 #>
+
+try {
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    # throw "Simulate Exception Test"
+} catch {
+    $result = @{
+        error = "Error setting execution policy!"
+        exception = $_.Exception.Message
+        exception_full = $_.ToString()
+    }
+    $result | ConvertTo-Json
+    exit 10
+}
 
 # Check if NVM is already installed
 try {
@@ -33,7 +47,7 @@ try {
     $result.alreadyInstalled = $true
     $result.commandOutput += "Node Version Manager (nvm) is already installed."
     $result | ConvertTo-Json
-    return
+    exit $SUCCESS
 } catch {
     $result.commandOutput += "NVM not installed, proceeding with installation."
 }
@@ -43,12 +57,11 @@ try {
     $result.commandOutput += "Downloading nvm-windows installer..."
     Invoke-WebRequest -Uri $nvmUrl -OutFile $zipPath
 } catch {
-    $result.success = $false
     $result.error = "Failed to download nvm-windows installer: $_"
     $result.exception = $_.Exception.Message
     $result.exception_full = $_.ToString()
     $result | ConvertTo-Json
-    return
+    exit 18
 }
 
 # Extract the installer
@@ -56,12 +69,11 @@ try {
     $result.commandOutput += "Extracting nvm-windows installer..."
     Expand-Archive -Path $zipPath -DestinationPath $installPath -Force
 } catch {
-    $result.success = $false
     $result.error = "Failed to extract nvm-windows installer: $_"
     $result.exception = $_.Exception.Message
     $result.exception_full = $_.ToString()
     $result | ConvertTo-Json
-    return
+    exit 19
 }
 
 # Run the installer
@@ -71,12 +83,11 @@ try {
     $result.commandOutput += $installOutput.StandardOutput
     $result.alreadyInstalled = $false
 } catch {
-    $result.success = $false
     $result.error = "Failed to run nvm-windows installer"
     $result.exception = $_.Exception.Message
     $result.exception_full = $_.ToString()
     $result | ConvertTo-Json
-    return
+    exit 20
 }
 
 # Clean up
@@ -87,9 +98,7 @@ try {
     $result.commandOutput += "Failed to clean up: $_"
 }
 
-# Final success message
-if ($result.success) {
-    $result.commandOutput += "nvm-windows installation completed."
-}
+$result.commandOutput += "nvm-windows installation completed."
 
 $result | ConvertTo-Json
+exit $SUCCESS

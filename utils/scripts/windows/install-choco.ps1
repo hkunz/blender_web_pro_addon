@@ -1,28 +1,28 @@
+. "$PSScriptRoot\exit-codes.ps1"
+
 try {
     Set-ExecutionPolicy Bypass -Scope Process -Force
     # throw "Simulate Exception Test"
 } catch {
     $result = @{
-        success = $false
         error = "Error setting execution policy!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    return
+    exit 10
 }
 
 try {
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
 } catch {
     $result = @{
-        success = $false
         error = "Error setting security protocol!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    return
+    exit 11
 }
 
 $source = "https://community.chocolatey.org/install.ps1"
@@ -36,16 +36,14 @@ if (Get-Command choco -ErrorAction SilentlyContinue) {
         $chocoPath = (Get-Command choco).Source
     } catch {
         $result = @{
-            success = $false
             error = "Error running choco but is installed already!"
             exception = $_.Exception.Message
             exception_full = $_.ToString()
         }
         $result | ConvertTo-Json
-        return
+        exit 12
     }
     $result = @{
-        success = $true
         version = $version
         alreadyInstalled = $true
         chocoPath = $chocoPath
@@ -53,7 +51,7 @@ if (Get-Command choco -ErrorAction SilentlyContinue) {
         commandOutput = @("Chocolatey is already installed!")
     }
     $result | ConvertTo-Json
-    return
+    exit $SUCCESS
 }
 
 try {
@@ -61,13 +59,12 @@ try {
     iex $scriptContent
 } catch {
     $result = @{
-        success = $false
         error = "Error downloading/executing installation script!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    return
+    exit 13
 }
 
 try {
@@ -75,19 +72,17 @@ try {
     $chocoPath = (Get-Command choco).Source
 } catch {
     $result = @{
-        success = $false
         error = "Error running choco after installation!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    return
+    exit 14
 }
 
 try {
     choco upgrade chocolatey
     $result = @{
-        success = $true
         version = $version
         alreadyInstalled = $false
         chocoPath = $chocoPath
@@ -96,11 +91,12 @@ try {
     $result | ConvertTo-Json
 } catch {
     $result = @{
-        success = $false
         error = "Error upgrading Chocolatey!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
-    return
+    exit 15
 }
+
+exit $SUCCESS
