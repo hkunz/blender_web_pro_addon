@@ -74,6 +74,10 @@ class OperatorInstallBase(bpy.types.Operator):
 
     def execute(self, context):
         if self.check_internet():
+            #FIXME: https://blender.stackexchange.com/questions/322779/how-can-i-get-info-report-to-show-up-before-subprocess-call
+            #context.window_manager.popup_menu(lambda self, context: self.layout.label(text="Installation in progress... Please wait."), title="Info", icon='INFO')
+            #context.view_layer.update()
+            #bpy.app.timers.register(self.execute_script, first_interval=0.1)
             self.execute_script()
         else:
             self.report({'ERROR'}, f"No internet connection. Please check your internet connection!")
