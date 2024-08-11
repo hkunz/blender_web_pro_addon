@@ -81,12 +81,8 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
 
     def draw(self, context) -> None:
         layout: bpy.types.UILayout = self.layout
-        selected_mesh_objects = [obj for obj in context.selected_objects if obj.type == 'MESH']
-        active_object = context.active_object if len(selected_mesh_objects) > 0 and context.active_object in selected_mesh_objects else None
-        properties: UserInterfacePropertyGroup = context.scene.userinterface_props
-        #box = layout.box().column()
-
-        if context.scene.installation_props.check_installation:
+        props = context.scene.installation_props
+        if props.check_installation:
             layout.operator(WEB_OT_OperatorInstallCheck.bl_idname, text="Check Installation")
             return
 
@@ -108,6 +104,7 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
                     self.add_layout_gn_prop_pointer(layout, md, rna)
 
     def draw_expanded_installation(self, context, layout):
+        props = context.scene.installation_props
         ebox = layout.box()
         row = ebox.box().row()
         row.prop(
@@ -119,20 +116,20 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
         if context.scene.expanded_installation:
             properties: UserInterfacePropertyGroup = context.scene.userinterface_props
             col = layout.box().column()
-            self.create_install_button(col, WEB_OT_OperatorInstallChoco.bl_idname, text="Install Chocolatey", state=1)
-            self.create_install_button(col, WEB_OT_OperatorInstallNodeJS.bl_idname, text="Install Node.js", state=2)
-            self.create_install_button(col, WEB_OT_OperatorInstallNVM.bl_idname, text="Install NVM", state=0)
+            self.create_install_button(col, WEB_OT_OperatorInstallChoco.bl_idname, text="Chocolatey", state=props.installation_status_choco, version=props.installed_choco_v)
+            self.create_install_button(col, WEB_OT_OperatorInstallNodeJS.bl_idname, text="Node.js", state=props.installation_status_nodejs, version=props.installed_nodejs_v)
+            self.create_install_button(col, WEB_OT_OperatorInstallNVM.bl_idname, text="NVM", state=props.installation_status_nvm, version=props.installed_nvm_v)
             box = layout.box().column()
             #box.label(text="Project Directory", icon="FILEBROWSER")
             box.prop(properties, "output_directory")
-            self.create_install_button(box, WEB_OT_OperatorInstallThreeJS.bl_idname, text="Install Three.js")
-            self.create_install_button(box, WEB_OT_OperatorInstallViteDependency.bl_idname, text="Install Vite Dependency")
+            self.create_install_button(box, WEB_OT_OperatorInstallThreeJS.bl_idname, text="Three.js")
+            self.create_install_button(box, WEB_OT_OperatorInstallViteDependency.bl_idname, text="Vite Dependency")
             #col.prop(data=context.scene.render,property="fps",text="Frame Rate 2") # https://blender.stackexchange.com/questions/317553/how-to-exposure-render-settings-to-addon-panel/317565#317565
             #self.add_layout_gn_prop(layout, context.object.modifiers["Geometry Nodes"], "Socket_2") # https://blender.stackexchange.com/questions/317571/how-can-i-expose-geometry-nodes-properties-in-my-addon-panel/317586
             #col.operator(EXPORT_OT_file_vox.bl_idname, text="Export Button")
             #col.operator(WEB_OT_OperatorTestWeb.bl_idname, text="Test Web")
 
-    def create_install_button(self, layout, operator, text, state=0):
+    def create_install_button(self, layout, operator, text, state=0, version=""):
         row = layout.row(align=True)
         if state == 0:
             row.label(text="", icon="IMPORT") #icon_value=IconsManager().get_icon_id(IconsManager.ICON_CHECKMARK))
@@ -140,6 +137,7 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
             row.label(text="", icon="SEQUENCE_COLOR_04")
         else:
             row.label(text="", icon="CANCEL")
+        text = "Install " + text if not version else text + " (" + version + ")"
         row.operator(operator, text=text)
 
     def draw_sample_expanded_options(self, context, layout):
@@ -213,8 +211,8 @@ def register() -> None:
 def unregister() -> None:
     bpy.utils.unregister_class(OBJECT_PT_my_addon_panel)
     bpy.utils.unregister_class(UserInterfacePropertyGroup)
-    bpy.utils.unregister_class(MyPropertyGroup2)
     bpy.utils.unregister_class(InstallationPropertyGroup)
+    bpy.utils.unregister_class(MyPropertyGroup2)
     bpy.utils.unregister_class(WEB_OT_OperatorInstallCheck)
     bpy.utils.unregister_class(WEB_OT_OperatorInstallChoco)
     bpy.utils.unregister_class(WEB_OT_OperatorInstallNodeJS)
