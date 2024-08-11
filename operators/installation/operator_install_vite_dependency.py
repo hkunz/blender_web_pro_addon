@@ -13,7 +13,7 @@ class WEB_OT_OperatorInstallViteDependency(OperatorScriptBase):
         return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-vite-dependency.ps1')
 
     def get_script_args(self):
-        props = bpy.context.scene.my_property_group_pointer
+        props = bpy.context.scene.userinterface_props
         output_directory = props.output_directory
         return ["-DirectoryPath", output_directory]
 

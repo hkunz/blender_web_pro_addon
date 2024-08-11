@@ -1,5 +1,4 @@
 import bpy
-import bpy_types
 
 from typing import List, Tuple
 from bpy.app.handlers import persistent
@@ -16,6 +15,7 @@ from blender_web_pro.operators.installation.operator_install_nvm import WEB_OT_O
 from blender_web_pro.operators.installation.operator_install_threejs import WEB_OT_OperatorInstallThreeJS # type: ignore
 from blender_web_pro.operators.installation.operator_install_vite_dependency import WEB_OT_OperatorInstallViteDependency # type: ignore
 from blender_web_pro.ui.property_groups.property_group_installation_properties import InstallationPropertyGroup # type: ignore
+from blender_web_pro.ui.property_groups.property_group_userinterface_properties import UserInterfacePropertyGroup # type: ignore
 from blender_web_pro.utils.utils import Utils # type: ignore
 from blender_web_pro.utils.object_utils import ObjectUtils # type: ignore
 from blender_web_pro.utils.icons_manager import IconsManager  # type: ignore
@@ -41,16 +41,8 @@ def on_depsgraph_update(scene, depsgraph=None):
     obj = context.active_object
     if not obj:
         return
-    properties: MyPropertyGroup1 = context.scene.my_property_group_pointer # type: ignore
+    properties: UserInterfacePropertyGroup = context.scene.userinterface_props # type: ignore
     check_object_selection_change(context, properties, obj)
-
-def my_sample_settings_callback(self: bpy.types.Scene, context: bpy_types.Context) -> List[Tuple[str, str, str]]:
-    SAMPLE_LIST: List[Tuple[str, str, str]] = [
-        ("NONE", "None", "Item Description"),
-        ("OPT1", "Option 1", "Item Description for Option 1"),
-        ("OPT2", "Option 2", "Item Description for Option 2"),
-    ]
-    return SAMPLE_LIST
 
 def my_sample_update_rgb_nodes(self, context):
     mat = self.id_data
@@ -63,44 +55,6 @@ def check_object_selection_change(context, properties, obj):
     #     return
     # PREVIOUS_ACTIVE_OBJECT = obj
     pass
-
-class MyPropertyGroup1(bpy.types.PropertyGroup):
-
-    output_directory: bpy.props.StringProperty(
-        name="",
-        description="Directory where to install Three.js",
-        subtype='DIR_PATH'
-    ) # type: ignore
-
-    my_enum_prop: bpy.props.EnumProperty(
-        name="My Enum Prop",
-        description="My enum prop description",
-        items=my_sample_settings_callback,
-        #default="NONE", # cannot set a default when using dynamic EnumProperty
-    ) # type: ignore https://blender.stackexchange.com/questions/311578/how-do-you-correctly-add-ui-elements-to-adhere-to-the-typing-spec/311770#311770
-
-    my_float_prop: bpy.props.FloatProperty(
-        name="My Float Prop",
-        description="My float prop description",
-        default=0,
-        min=-10.0,
-        max=10.0,
-        precision=2,
-        #update=on_float_input_change,
-        #set=validate_input # does not work. so we can only update in on_input_voxelsize_change
-    ) # type: ignore
-
-    my_string_prop: bpy.props.StringProperty(
-        name="My String Prop",
-        description="My string prop description",
-        #update=on_string_input_change
-    ) # type: ignore
-
-    my_file_input_prop: bpy.props.StringProperty(
-        name="File Path",
-        subtype='FILE_PATH'
-    ) # type: ignore
-
 
 class MyPropertyGroup2(bpy.types.PropertyGroup):
     rgb_controller: bpy.props.FloatVectorProperty(
@@ -129,25 +83,17 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
         layout: bpy.types.UILayout = self.layout
         selected_mesh_objects = [obj for obj in context.selected_objects if obj.type == 'MESH']
         active_object = context.active_object if len(selected_mesh_objects) > 0 and context.active_object in selected_mesh_objects else None
-        properties: MyPropertyGroup1 = context.scene.my_property_group_pointer
+        properties: UserInterfacePropertyGroup = context.scene.userinterface_props
         #box = layout.box().column()
 
         if context.scene.installation_props.check_installation:
             layout.operator(WEB_OT_OperatorInstallCheck.bl_idname, text="Check Installation")
             return
 
-        # sample props:
-        #box.prop(properties, "my_enum_prop")
-        #box.prop(properties, "my_float_prop")
-        #box.prop(properties, "my_string_prop")
-        #box.prop(properties, "my_file_input_prop")
-
-        #box.label(text="Icon Label", icon=IconsManager.BUILTIN_ICON_MESH_DATA)
-
-        self.draw_sample_expanded_installation(context, layout)
-        #self.draw_sample_modifier_exposed_props(context, layout, "GeometryNodes")
+        self.draw_expanded_installation(context, layout)
         self.draw_sample_expanded_options(context, layout)
-        self.draw_sample_color_picker(context, layout)
+        #self.draw_sample_color_picker(context, layout)
+        #self.draw_sample_modifier_exposed_props(context, layout, "GeometryNodes")
 
     def draw_sample_modifier_exposed_props(self, context, layout, md_name = "GeometryNodes"):
         # to test this function add a Geometry Nodes Modifier by the name "GeometryNodes" and add some inputs to it which will get exposed in the addon panel
@@ -161,7 +107,7 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
                 if hasattr(rna, "in_out") and rna.in_out == "INPUT":
                     self.add_layout_gn_prop_pointer(layout, md, rna)
 
-    def draw_sample_expanded_installation(self, context, layout):
+    def draw_expanded_installation(self, context, layout):
         ebox = layout.box()
         row = ebox.box().row()
         row.prop(
@@ -171,7 +117,7 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
         )
         row.label(text="Installation")
         if context.scene.expanded_installation:
-            properties: MyPropertyGroup1 = context.scene.my_property_group_pointer
+            properties: UserInterfacePropertyGroup = context.scene.userinterface_props
             col = layout.box().column()
             self.create_install_button(col, WEB_OT_OperatorInstallChoco.bl_idname, text="Install Chocolatey", state=1)
             self.create_install_button(col, WEB_OT_OperatorInstallNodeJS.bl_idname, text="Install Node.js", state=2)
@@ -243,7 +189,7 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
 
 def register() -> None:
     bpy.utils.register_class(OBJECT_PT_my_addon_panel)
-    bpy.utils.register_class(MyPropertyGroup1)
+    bpy.utils.register_class(UserInterfacePropertyGroup)
     bpy.utils.register_class(MyPropertyGroup2)
     bpy.utils.register_class(InstallationPropertyGroup)
     bpy.utils.register_class(WEB_OT_OperatorInstallCheck)
@@ -254,7 +200,7 @@ def register() -> None:
     bpy.utils.register_class(WEB_OT_OperatorInstallViteDependency)
     bpy.utils.register_class(WEB_OT_OperatorTestWeb)
     bpy.types.Material.my_slot_setting = bpy.props.PointerProperty(type=MyPropertyGroup2)
-    bpy.types.Scene.my_property_group_pointer = bpy.props.PointerProperty(type=MyPropertyGroup1)
+    bpy.types.Scene.userinterface_props = bpy.props.PointerProperty(type=UserInterfacePropertyGroup)
     bpy.types.Scene.installation_props = bpy.props.PointerProperty(type=InstallationPropertyGroup)
     bpy.types.Scene.expanded_installation = bpy.props.BoolProperty(default=False)
     bpy.types.Scene.expanded_options = bpy.props.BoolProperty(default=False)
@@ -266,7 +212,7 @@ def register() -> None:
 
 def unregister() -> None:
     bpy.utils.unregister_class(OBJECT_PT_my_addon_panel)
-    bpy.utils.unregister_class(MyPropertyGroup1)
+    bpy.utils.unregister_class(UserInterfacePropertyGroup)
     bpy.utils.unregister_class(MyPropertyGroup2)
     bpy.utils.unregister_class(InstallationPropertyGroup)
     bpy.utils.unregister_class(WEB_OT_OperatorInstallCheck)
@@ -279,7 +225,7 @@ def unregister() -> None:
     del bpy.types.Material.my_slot_setting
     del bpy.types.Scene.expanded_installation
     del bpy.types.Scene.expanded_options
-    del bpy.types.Scene.my_property_group_pointer
+    del bpy.types.Scene.userinterface_props
     del bpy.types.Scene.installation_props
     bpy.utils.unregister_class(OBJECT_OT_OperatorEmpty)
     bpy.utils.unregister_class(EXPORT_OT_file_vox)
