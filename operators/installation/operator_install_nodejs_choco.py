@@ -11,7 +11,7 @@ class WEB_OT_OperatorInstallNodeJS(OperatorScriptBase):
     def get_script_path(self):
         return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-nodejs-choco.ps1')
 
-    def handle_success(self, result):
+    def handle_success(self, result, context):
         node_version = result.get("nodeVersion", "Unknown node.js version")
         npm_version = result.get("npmVersion", "Unknown npm version")
         npx_version = result.get("npxVersion", "Unknown npx version")

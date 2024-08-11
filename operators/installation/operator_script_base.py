@@ -35,14 +35,14 @@ class OperatorScriptBase(bpy.types.Operator):
             create_generic_popup(message=f"Script execution failed,,CANCEL,,1|Invalid JSON output,,CANCEL,,1")
         return None
 
-    def execute_script(self):
+    def execute_script(self, context):
         script_path = self.get_script_path()
         script_args = self.get_script_args()
         output = self.run_script(script_path, *script_args)
         if output is None:
             return
         result = self.get_json(output)
-        self.handle_success(result)
+        self.handle_success(result, context)
         cmd_output = result.get("commandOutput", [])
         self.report_command_output(cmd_output)
 
@@ -78,7 +78,7 @@ class OperatorScriptBase(bpy.types.Operator):
             #context.window_manager.popup_menu(lambda self, context: self.layout.label(text="Installation in progress... Please wait."), title="Info", icon='INFO')
             #context.view_layer.update()
             #bpy.app.timers.register(self.execute_script, first_interval=0.1)
-            self.execute_script()
+            self.execute_script(context)
         else:
             self.report({'ERROR'}, f"No internet connection. Please check your internet connection!")
         return {'FINISHED'}

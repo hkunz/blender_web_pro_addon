@@ -1,17 +1,22 @@
+import bpy
 import os
 
 from blender_web_pro.operators.common.operator_generic_popup import create_generic_popup # type: ignore
 from blender_web_pro.operators.installation.operator_script_base import OperatorScriptBase # type: ignore
 
-class WEB_OT_OperatorInstallNVM(OperatorScriptBase):
-    bl_idname = "blender_web_pro.install_nvm_operator"
-    bl_label = "Install NVM"
-    bl_description = "Install NVM (Node Version Manager) which is a tool for managing multiple versions of Node.js on a single machine, allowing users to easily switch between different versions for different projects"
+class WEB_OT_OperatorInstallCheck(OperatorScriptBase):
+    bl_idname = "blender_web_pro.install_check_operator"
+    bl_label = "Installation Check Operator"
+    bl_description = "Check installation status"
+    bl_options = {'REGISTER'}
 
     def get_script_path(self):
-        return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-nvm.ps1')
+        return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-check.ps1')
 
     def handle_success(self, result, context):
+        props = context.scene.installation_props
+        props.check_installation = False
+        return
         nvm_version = result.get("nvmVersion", "Unknown NVM version")
         already_installed = result.get("alreadyInstalled", False)
 

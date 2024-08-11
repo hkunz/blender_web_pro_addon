@@ -18,7 +18,7 @@ class WEB_OT_OperatorInstallChoco(OperatorScriptBase):
     def get_script_path(self):
         return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-choco.ps1')
 
-    def handle_success(self, result):
+    def handle_success(self, result, context):
         version = result.get("version", "Unknown version")
         already_installed = result.get("alreadyInstalled", False)
         choco_path = result.get("chocoPath", "Unknown path")

@@ -17,7 +17,7 @@ class WEB_OT_OperatorInstallViteDependency(OperatorScriptBase):
         output_directory = props.output_directory
         return ["-DirectoryPath", output_directory]
 
-    def handle_success(self, result):
+    def handle_success(self, result, context):
         node_version = result.get("nodeVersion", "Unknown Node.js version")
         npm_version = result.get("npmVersion", "Unknown npm version")
         directory = result.get("directoryPath", "Unknown directory path")

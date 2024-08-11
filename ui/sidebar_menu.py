@@ -9,11 +9,13 @@ from blender_web_pro.operators.file.operator_file_vox_exporter import EXPORT_OT_
 from blender_web_pro.operators.cache.operator_clear_all_temp_cache import register as register_all_temp_cache_operator, unregister as unregister_all_temp_cache_operator # type: ignore
 from blender_web_pro.operators.cache.operator_clear_temp_cache import register as register_temp_cache_operator, unregister as unregister_temp_cache_operator # type: ignore
 from blender_web_pro.operators.operator_test_web import WEB_OT_OperatorTestWeb # type: ignore
+from blender_web_pro.operators.installation.operator_install_check import WEB_OT_OperatorInstallCheck # type: ignore
 from blender_web_pro.operators.installation.operator_install_choco import WEB_OT_OperatorInstallChoco # type: ignore
 from blender_web_pro.operators.installation.operator_install_nodejs_choco import WEB_OT_OperatorInstallNodeJS # type: ignore
 from blender_web_pro.operators.installation.operator_install_nvm import WEB_OT_OperatorInstallNVM # type: ignore
 from blender_web_pro.operators.installation.operator_install_threejs import WEB_OT_OperatorInstallThreeJS # type: ignore
 from blender_web_pro.operators.installation.operator_install_vite_dependency import WEB_OT_OperatorInstallViteDependency # type: ignore
+from blender_web_pro.ui.property_groups.property_group_installation_properties import InstallationPropertyGroup # type: ignore
 from blender_web_pro.utils.utils import Utils # type: ignore
 from blender_web_pro.utils.object_utils import ObjectUtils # type: ignore
 from blender_web_pro.utils.icons_manager import IconsManager  # type: ignore
@@ -77,13 +79,6 @@ class MyPropertyGroup1(bpy.types.PropertyGroup):
         #default="NONE", # cannot set a default when using dynamic EnumProperty
     ) # type: ignore https://blender.stackexchange.com/questions/311578/how-do-you-correctly-add-ui-elements-to-adhere-to-the-typing-spec/311770#311770
 
-    my_bool_prop: bpy.props.BoolProperty(
-        name="My Bool Prop",
-        description="My bool prop description",
-        default=False,
-        #update=on_bool_input_change,
-    ) # type: ignore
-
     my_float_prop: bpy.props.FloatProperty(
         name="My Float Prop",
         description="My float prop description",
@@ -136,6 +131,10 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
         active_object = context.active_object if len(selected_mesh_objects) > 0 and context.active_object in selected_mesh_objects else None
         properties: MyPropertyGroup1 = context.scene.my_property_group_pointer
         #box = layout.box().column()
+
+        if context.scene.installation_props.check_installation:
+            layout.operator(WEB_OT_OperatorInstallCheck.bl_idname, text="Check Installation")
+            return
 
         # sample props:
         #box.prop(properties, "my_enum_prop")
@@ -246,6 +245,8 @@ def register() -> None:
     bpy.utils.register_class(OBJECT_PT_my_addon_panel)
     bpy.utils.register_class(MyPropertyGroup1)
     bpy.utils.register_class(MyPropertyGroup2)
+    bpy.utils.register_class(InstallationPropertyGroup)
+    bpy.utils.register_class(WEB_OT_OperatorInstallCheck)
     bpy.utils.register_class(WEB_OT_OperatorInstallChoco)
     bpy.utils.register_class(WEB_OT_OperatorInstallNodeJS)
     bpy.utils.register_class(WEB_OT_OperatorInstallNVM)
@@ -254,6 +255,7 @@ def register() -> None:
     bpy.utils.register_class(WEB_OT_OperatorTestWeb)
     bpy.types.Material.my_slot_setting = bpy.props.PointerProperty(type=MyPropertyGroup2)
     bpy.types.Scene.my_property_group_pointer = bpy.props.PointerProperty(type=MyPropertyGroup1)
+    bpy.types.Scene.installation_props = bpy.props.PointerProperty(type=InstallationPropertyGroup)
     bpy.types.Scene.expanded_installation = bpy.props.BoolProperty(default=False)
     bpy.types.Scene.expanded_options = bpy.props.BoolProperty(default=False)
     bpy.utils.register_class(OBJECT_OT_OperatorEmpty)
@@ -266,6 +268,8 @@ def unregister() -> None:
     bpy.utils.unregister_class(OBJECT_PT_my_addon_panel)
     bpy.utils.unregister_class(MyPropertyGroup1)
     bpy.utils.unregister_class(MyPropertyGroup2)
+    bpy.utils.unregister_class(InstallationPropertyGroup)
+    bpy.utils.unregister_class(WEB_OT_OperatorInstallCheck)
     bpy.utils.unregister_class(WEB_OT_OperatorInstallChoco)
     bpy.utils.unregister_class(WEB_OT_OperatorInstallNodeJS)
     bpy.utils.unregister_class(WEB_OT_OperatorInstallNVM)
@@ -276,6 +280,7 @@ def unregister() -> None:
     del bpy.types.Scene.expanded_installation
     del bpy.types.Scene.expanded_options
     del bpy.types.Scene.my_property_group_pointer
+    del bpy.types.Scene.installation_props
     bpy.utils.unregister_class(OBJECT_OT_OperatorEmpty)
     bpy.utils.unregister_class(EXPORT_OT_file_vox)
     unregister_temp_cache_operator()
