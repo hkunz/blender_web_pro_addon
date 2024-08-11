@@ -65,7 +65,7 @@ def check_object_selection_change(context, properties, obj):
 class MyPropertyGroup1(bpy.types.PropertyGroup):
 
     output_directory: bpy.props.StringProperty(
-        name="Output Directory",
+        name="",
         description="Directory where to install Three.js",
         subtype='DIR_PATH'
     ) # type: ignore
@@ -173,17 +173,29 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
         row.label(text="Installation")
         if context.scene.expanded_installation:
             properties: MyPropertyGroup1 = context.scene.my_property_group_pointer
-            col = layout.column()
-            col.operator(WEB_OT_OperatorInstallChoco.bl_idname, text="Install Chocolatey")
-            col.operator(WEB_OT_OperatorInstallNodeJS.bl_idname, text="Install Node.js")
-            col.operator(WEB_OT_OperatorInstallNVM.bl_idname, text="Install NVM")
-            col.operator(WEB_OT_OperatorInstallThreeJS.bl_idname, text="Install Three.js")
-            col.operator(WEB_OT_OperatorInstallViteDependency.bl_idname, text="Install Vite Dependency")
-            col.prop(properties, "output_directory")
+            col = layout.box().column()
+            self.create_install_button(col, WEB_OT_OperatorInstallChoco.bl_idname, text="Install Chocolatey", state=1)
+            self.create_install_button(col, WEB_OT_OperatorInstallNodeJS.bl_idname, text="Install Node.js", state=2)
+            self.create_install_button(col, WEB_OT_OperatorInstallNVM.bl_idname, text="Install NVM", state=0)
+            box = layout.box().column()
+            #box.label(text="Project Directory", icon="FILEBROWSER")
+            box.prop(properties, "output_directory")
+            self.create_install_button(box, WEB_OT_OperatorInstallThreeJS.bl_idname, text="Install Three.js")
+            self.create_install_button(box, WEB_OT_OperatorInstallViteDependency.bl_idname, text="Install Vite Dependency")
             #col.prop(data=context.scene.render,property="fps",text="Frame Rate 2") # https://blender.stackexchange.com/questions/317553/how-to-exposure-render-settings-to-addon-panel/317565#317565
             #self.add_layout_gn_prop(layout, context.object.modifiers["Geometry Nodes"], "Socket_2") # https://blender.stackexchange.com/questions/317571/how-can-i-expose-geometry-nodes-properties-in-my-addon-panel/317586
             #col.operator(EXPORT_OT_file_vox.bl_idname, text="Export Button")
             #col.operator(WEB_OT_OperatorTestWeb.bl_idname, text="Test Web")
+
+    def create_install_button(self, layout, operator, text, state=0):
+        row = layout.row(align=True)
+        if state == 0:
+            row.label(text="", icon="IMPORT") #icon_value=IconsManager().get_icon_id(IconsManager.ICON_CHECKMARK))
+        elif state == 1:
+            row.label(text="", icon="SEQUENCE_COLOR_04")
+        else:
+            row.label(text="", icon="CANCEL")
+        row.operator(operator, text=text)
 
     def draw_sample_expanded_options(self, context, layout):
         ebox = layout.box()
