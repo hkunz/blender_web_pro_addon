@@ -2,9 +2,9 @@ import bpy
 import os
 
 from blender_web_pro.operators.common.operator_generic_popup import create_generic_popup # type: ignore
-from blender_web_pro.operators.installation.operator_install_base import OperatorInstallBase # type: ignore
+from blender_web_pro.operators.installation.operator_script_base import OperatorScriptBase # type: ignore
 
-class WEB_OT_OperatorInstallThreeJS(OperatorInstallBase):
+class WEB_OT_OperatorInstallThreeJS(OperatorScriptBase):
     bl_idname = "blender_web_pro.install_threejs_via_npm_operator"
     bl_label = "Install Three.js via npm operator"
     bl_description = "Install Three.js (via npm) which is a JavaScript library that simplifies the creation and rendering of 3D graphics in the web browser using WebGL"

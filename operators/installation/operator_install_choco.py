@@ -1,9 +1,9 @@
 import os
 
 from blender_web_pro.operators.common.operator_generic_popup import create_generic_popup # type: ignore
-from blender_web_pro.operators.installation.operator_install_base import OperatorInstallBase # type: ignore
+from blender_web_pro.operators.installation.operator_script_base import OperatorScriptBase # type: ignore
 
-class WEB_OT_OperatorInstallChoco(OperatorInstallBase):
+class WEB_OT_OperatorInstallChoco(OperatorScriptBase):
     bl_idname = "blender_web_pro.install_choco_operator"
     bl_label = "Install Chocolatey"
     bl_description = "Install Chocolatey which is a package manager for Windows that simplifies the installation, update, and management of software packages and dependencies"

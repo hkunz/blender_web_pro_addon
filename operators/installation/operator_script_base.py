@@ -5,7 +5,7 @@ import bpy
 
 from blender_web_pro.operators.common.operator_generic_popup import create_generic_popup # type: ignore
 
-class OperatorInstallBase(bpy.types.Operator):
+class OperatorScriptBase(bpy.types.Operator):
     bl_options = {'INTERNAL'}
 
     def get_script_path(self):

@@ -1,9 +1,9 @@
 import os
 
 from blender_web_pro.operators.common.operator_generic_popup import create_generic_popup # type: ignore
-from blender_web_pro.operators.installation.operator_install_base import OperatorInstallBase # type: ignore
+from blender_web_pro.operators.installation.operator_script_base import OperatorScriptBase # type: ignore
 
-class WEB_OT_OperatorInstallNodeJS(OperatorInstallBase):
+class WEB_OT_OperatorInstallNodeJS(OperatorScriptBase):
     bl_idname = "blender_web_pro.install_nodejs_operator"
     bl_label = "Install Node.js"
     bl_description = "Install Node.js which is a JavaScript runtime built on Chrome's V8 JavaScript engine"
