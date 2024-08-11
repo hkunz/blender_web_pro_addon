@@ -17,6 +17,8 @@ class IconsManager:
 
     ICON_VOXELIZED = "icon_voxelized"
     ICON_MESH_OBJECT = "icon_mesh_object"
+    ICON_GREEN_CHECK = "icon_greencheck"
+    ICON_EXCLAMATION = "icon_exclamation"
 
     def __new__(cls):
         if cls._instance is None:
@@ -34,7 +36,7 @@ class IconsManager:
         if self.icons_dict:
             return
         self.icons_dict = bpy.utils.previews.new()
-        self.register_icons(IconsManager.ICON_VOXELIZED, IconsManager.ICON_MESH_OBJECT)
+        self.register_icons(IconsManager.ICON_EXCLAMATION, IconsManager.ICON_GREEN_CHECK)
 
     def register_icons(self, *icon_names):
         for icon_name in icon_names:
@@ -63,4 +65,4 @@ class IconsManager:
 
 # sample usage
 # layout.label(text=item.name, icon=ICON_LIST[1])
-# layout.label(text=item.name, icon_value=get_icon_id())
+# layout.label(text=item.name, icon_value=IconsManager().get_icon_id(IconsManager.ICON_NAME))
