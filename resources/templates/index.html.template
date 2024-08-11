@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blender Web Pro">
+    <title>Blender Web Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header, footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+        }
+        main {
+            padding: 2rem;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            line-height: 1.6;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Blender Web Pro</h1>
+    </header>
+
+    <main>
+        <h2>Welcome to Blender Web Pro Test Page</h2>
+        <p>You have successfully tested opening a web page with Blender Web Pro. </p>
+        <p>For more information, visit <a href="https://blendermarket.com/creators/harrymckenzie">Blender Web Pro</a>.</p>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Blender Web Pro</p>
+    </footer>
+</body>
+</html>

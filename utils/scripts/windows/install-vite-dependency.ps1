@@ -76,7 +76,7 @@ try {
         npmVersion = $npmVersion
         alreadyInstalled = $false
         directoryPath = $DirectoryPath
-        commandOutput = $commandOutput
+        commandOutput = @($commandOutput)
     }
     $result | ConvertTo-Json
 } catch {
