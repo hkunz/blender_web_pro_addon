@@ -2,6 +2,7 @@ import os
 
 from blender_web_pro.operators.common.operator_generic_popup import create_generic_popup # type: ignore
 from blender_web_pro.operators.installation.operator_script_base import OperatorScriptBase # type: ignore
+from blender_web_pro.ui.property_groups.property_group_installation_properties import InstallationPropertyGroup # type: ignore
 
 class WEB_OT_OperatorInstallNodeJS(OperatorScriptBase):
     bl_idname = "blender_web_pro.install_nodejs_operator"
@@ -20,6 +21,14 @@ class WEB_OT_OperatorInstallNodeJS(OperatorScriptBase):
         msg = "Node.js is installed successfully"
         if already_installed:
             msg = "Node.js is already installed"
+
+        props = context.scene.installation_props
+        props.installation_status_nodejs = InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED
+        props.installed_nodejs_v = node_version
+        props.installation_status_npm = InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED
+        props.installed_npm_v = npm_version
+        props.installation_status_npx = InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED
+        props.installed_npx_v = npx_version
 
         print(msg, node_version, npm_version, npx_version)
         create_generic_popup(message=f"{msg},,CHECKMARK|Node Version: {node_version},,CHECKMARK|NPM Version: {npm_version},,CHECKMARK|NPX Version: {npx_version},,CHECKMARK")
