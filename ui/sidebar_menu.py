@@ -86,7 +86,16 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
             layout.operator(WEB_OT_OperatorInstallCheck.bl_idname, text="Check Installation")
             return
 
-        self.draw_expanded_installation(context, layout)
+        complete_installation = \
+            props.installation_status_choco == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED and \
+            props.installation_status_nodejs == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED and \
+            props.installation_status_nvm == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED
+
+        self.draw_expanded_installation(context, layout, complete_installation)
+
+        if not complete_installation:
+            return
+
         self.draw_sample_expanded_options(context, layout)
         #self.draw_sample_color_picker(context, layout)
         #self.draw_sample_modifier_exposed_props(context, layout, "GeometryNodes")
@@ -103,7 +112,7 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
                 if hasattr(rna, "in_out") and rna.in_out == "INPUT":
                     self.add_layout_gn_prop_pointer(layout, md, rna)
 
-    def draw_expanded_installation(self, context, layout):
+    def draw_expanded_installation(self, context, layout, complete_installation):
         props = context.scene.installation_props
         ebox = layout.box()
         row = ebox.box().row()
@@ -119,6 +128,10 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
             self.create_install_button(col, WEB_OT_OperatorInstallChoco.bl_idname, text="Chocolatey", state=props.installation_status_choco, version=props.installed_choco_v)
             self.create_install_button(col, WEB_OT_OperatorInstallNodeJS.bl_idname, text="Node.js", state=props.installation_status_nodejs, version=props.installed_nodejs_v)
             self.create_install_button(col, WEB_OT_OperatorInstallNVM.bl_idname, text="NVM", state=props.installation_status_nvm, version=props.installed_nvm_v)
+
+            if not complete_installation:
+                return
+
             box = layout.box().column()
             #box.label(text="Project Directory", icon="FILEBROWSER")
             box.prop(properties, "output_directory")
@@ -131,12 +144,14 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
 
     def create_install_button(self, layout, operator, text, state=0, version=""):
         row = layout.row(align=True)
-        if state == 0:
+        if state == InstallationPropertyGroup.INSTALLATION_STATUS_NOT_INSTALLED:
             row.label(text="", icon="IMPORT") #icon_value=IconsManager().get_icon_id(IconsManager.ICON_CHECKMARK))
-        elif state == 1:
+        elif state == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED:
             row.label(text="", icon="SEQUENCE_COLOR_04")
-        else:
+        elif state == InstallationPropertyGroup.INSTALLATION_STATUS_ERROR:
             row.label(text="", icon="CANCEL")
+        else:
+            row.label(text="", icon="ERROR")
         text = "Install " + text if not version else text + " (" + version + ")"
         row.operator(operator, text=text)
 
@@ -200,7 +215,7 @@ def register() -> None:
     bpy.types.Material.my_slot_setting = bpy.props.PointerProperty(type=MyPropertyGroup2)
     bpy.types.Scene.userinterface_props = bpy.props.PointerProperty(type=UserInterfacePropertyGroup)
     bpy.types.Scene.installation_props = bpy.props.PointerProperty(type=InstallationPropertyGroup)
-    bpy.types.Scene.expanded_installation = bpy.props.BoolProperty(default=False)
+    bpy.types.Scene.expanded_installation = bpy.props.BoolProperty(default=True)
     bpy.types.Scene.expanded_options = bpy.props.BoolProperty(default=False)
     bpy.utils.register_class(OBJECT_OT_OperatorEmpty)
     bpy.utils.register_class(EXPORT_OT_file_vox) # sample file export operator resulting in open dialog
