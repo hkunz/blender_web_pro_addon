@@ -84,7 +84,7 @@ try {
         $result = @{
             error = "Error installing Vite dependency."
             exception = "Installation failed with exit code: $exit_code."
-            exception_full = $commandOutput
+            exception_full = $commandOutput + $LINE_END + "Vite dependency failed to install into directory $DirectoryPath $LINE_END"
         }
         $result | ConvertTo-Json
         exit $ERROR_INSTALLING_VITE_DEPENDENCY
@@ -101,7 +101,7 @@ try {
     $result = @{
         error = "Error installing Vite dependency!"
         exception = $_.Exception.Message
-        exception_full = $_.ToString()
+        exception_full = $_.ToString() + $LINE_END + "Vite dependency failed to install into directory $DirectoryPath $LINE_END"
     }
     $result | ConvertTo-Json
     exit $ERROR_INSTALLING_VITE_DEPENDENCY
