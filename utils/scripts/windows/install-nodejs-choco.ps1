@@ -1,4 +1,5 @@
 . "$PSScriptRoot\exit-codes.ps1"
+. "$PSScriptRoot\constants.ps1"
 
 <#
 When you install Node.js via Chocolatey,
@@ -42,7 +43,7 @@ try {
         npmVersion = "$npmVersion"
         npxVersion = "$npxVersion"
         alreadyInstalled = $true
-        commandOutput = @("Node.js is already installed!")
+        commandOutput = @("Node.js is already installed!$LINE_END")
     }
     $result | ConvertTo-Json
     exit $SUCCESS
@@ -55,10 +56,10 @@ try {
     # choco install -y nodejs-lts | Tee-Object -Variable commandOutput | Out-Null
     $commandOutput = @()
     $output = & { choco install -y nodejs-lts *>&1 | Out-String }
-    $commandOutput += $output
+    $commandOutput += $output + $LINE_END
     $exit_code = $LASTEXITCODE
     if ($exit_code -eq 0) {
-        $commandOutput += "Successfully installed Node.js"
+        $commandOutput += "Successfully installed Node.js$LINE_END"
     } else {
         $result = @{
             error = "Error installing Node.js!"

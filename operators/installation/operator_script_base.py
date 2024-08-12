@@ -8,6 +8,9 @@ from blender_web_pro.operators.common.operator_generic_popup import create_gener
 class OperatorScriptBase(bpy.types.Operator):
     bl_options = {'INTERNAL'}
 
+    LINE_END = '{LINE_END}'
+    NEW_LINE = '\n'
+
     def get_script_path(self):
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -51,7 +54,7 @@ class OperatorScriptBase(bpy.types.Operator):
     def report_command_output(self, output_list):
         for output in output_list:
             output_str = str(output)
-            lines = output_str.split('\n')
+            lines = output_str.split(OperatorScriptBase.LINE_END)
             for line in lines:
                 if line.strip():  # Optional: Skip empty lines
                     self.report({'INFO'}, line)
@@ -65,7 +68,9 @@ class OperatorScriptBase(bpy.types.Operator):
         if exception:
             message += f"|{exception},,CANCEL,,1"
         create_generic_popup(message=message)
-        self.report({'ERROR'}, f"{exception_full if exception_full else (exception if exception else error)}")
+        msg = exception_full if exception_full else (exception if exception else error)
+        msg = "".join(msg).replace(OperatorScriptBase.LINE_END, OperatorScriptBase.NEW_LINE)
+        self.report({'ERROR'}, f"{msg}")
 
     def handle_unknown_error(self, e):
         self.report({'ERROR'}, str(e))

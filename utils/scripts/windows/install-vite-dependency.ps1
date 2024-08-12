@@ -3,6 +3,7 @@ param (
 )
 
 . "$PSScriptRoot\exit-codes.ps1"
+. "$PSScriptRoot\constants.ps1"
 
 try {
     Set-ExecutionPolicy Bypass -Scope Process -Force
@@ -70,14 +71,14 @@ try {
     # npm install --save-dev vite | Tee-Object -Variable commandOutput | Out-Null
     $commandOutput = @()
     $output = & { npm install --save-dev vite *>&1 | Out-String }
-    $commandOutput += $output
+    $commandOutput += $output + $LINE_END
     $exit_code = $LASTEXITCODE
     $nodeVersion = & node --version
-    $commandOutput += "Using node.js version $nodeVersion"
+    $commandOutput += "Using node.js version $nodeVersion $LINE_END"
     $npmVersion = & npm --version
-    $commandOutput += "Using npm version $npmVersion"
+    $commandOutput += "Using npm version $npmVersion $LINE_END"
     if ($exit_code -eq 0) {
-        $commandOutput += "Successfully installed Vite dependency"
+        $commandOutput += "Successfully installed Vite dependency$LINE_END"
     } else {
         $result = @{
             error = "Error installing Vite dependency."
@@ -92,7 +93,7 @@ try {
         npmVersion = $npmVersion
         alreadyInstalled = $false
         directoryPath = $DirectoryPath
-        commandOutput = @($commandOutput)
+        commandOutput = $commandOutput
     }
     $result | ConvertTo-Json
 } catch {

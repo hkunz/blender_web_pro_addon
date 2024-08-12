@@ -1,4 +1,5 @@
 . "$PSScriptRoot\exit-codes.ps1"
+. "$PSScriptRoot\constants.ps1"
 
 try {
     Set-ExecutionPolicy Bypass -Scope Process -Force
@@ -49,7 +50,7 @@ if (Get-Command choco -ErrorAction SilentlyContinue) {
         alreadyInstalled = $true
         chocoPath = $chocoPath
         source = $source
-        commandOutput = @("Chocolatey is already installed!")
+        commandOutput = @("Chocolatey is already installed!$LINE_END")
     }
     $result | ConvertTo-Json
     exit $SUCCESS
@@ -58,7 +59,7 @@ if (Get-Command choco -ErrorAction SilentlyContinue) {
 try {
     $scriptContent = (New-Object System.Net.WebClient).DownloadString($source)
     $output = & { iex $scriptContent *>&1 | Out-String }
-    $commandOutput += $output
+    $commandOutput += $output + $LINE_END
 } catch {
     $result = @{
         error = "Error downloading/executing installation script!"
@@ -88,10 +89,10 @@ try {
 
 try {
     $output = & { choco upgrade chocolatey 2>&1 | Out-String }
-    $commandOutput += $output
+    $commandOutput += $output + $LINE_END
     $exit_code = $LASTEXITCODE
     if ($exit_code -eq 0) {
-        $commandOutput += "Successfully installed Chocolatey"
+        $commandOutput += "Successfully installed Chocolatey$LINE_END"
     } else {
         $result = @{
             error = "Error installing Chocolatey!"

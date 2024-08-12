@@ -4,6 +4,7 @@ param (
 )
 
 . "$PSScriptRoot\exit-codes.ps1"
+. "$PSScriptRoot\constants.ps1"
 
 
 
@@ -74,14 +75,14 @@ try {
     # $commandOutput = npm install --save three 2>&1
     $commandOutput = @()
     $output = & { npm install --save three *>&1 | Out-String }
-    $commandOutput += $output
+    $commandOutput += $output + $LINE_END
     $exit_code = $LASTEXITCODE
     $nodeVersion = & node --version
-    $commandOutput += "Using node.js version $nodeVersion"
+    $commandOutput += "Using node.js version $nodeVersion $LINE_END"
     $npmVersion = & npm --version
-    $commandOutput += "Using npm version $npmVersion"
+    $commandOutput += "Using npm version $npmVersion $LINE_END"
     if ($exit_code -eq 0) {
-        $commandOutput += "Successfully installed Three.js"
+        $commandOutput += "Successfully installed Three.js$LINE_END"
     } else {
         $result = @{
             error = "Error installing Three.js."
