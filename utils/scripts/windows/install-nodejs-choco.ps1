@@ -53,7 +53,9 @@ try {
 try {
     #throw "Simulate Exception Test"
     # choco install -y nodejs-lts | Tee-Object -Variable commandOutput | Out-Null
-    $commandOutput = & { choco install -y nodejs-lts 2>&1 }
+    $commandOutput = @()
+    $output = & { choco install -y nodejs-lts *>&1 | Out-String }
+    $commandOutput += $output
     $exit_code = $LASTEXITCODE
     if ($exit_code -eq 0) {
         $commandOutput += "Successfully installed Node.js"

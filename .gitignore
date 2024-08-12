@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+nvm-setup.zip
 
 # C extensions
 *.so

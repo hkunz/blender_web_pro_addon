@@ -68,7 +68,9 @@ catch {
 try {
     # throw "Simulate Exception Test"
     # npm install --save-dev vite | Tee-Object -Variable commandOutput | Out-Null
-    $commandOutput = & { npm install --save-dev vite 2>&1 }
+    $commandOutput = @()
+    $output = & { npm install --save-dev vite *>&1 | Out-String }
+    $commandOutput += $output
     $exit_code = $LASTEXITCODE
     $nodeVersion = & node --version
     $commandOutput += "Using node.js version $nodeVersion"

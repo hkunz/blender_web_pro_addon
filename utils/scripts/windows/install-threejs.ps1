@@ -72,7 +72,9 @@ try {
     # throw "Simulate Exception Test"
     # npm install --save three | Tee-Object -Variable commandOutput | Out-Null
     # $commandOutput = npm install --save three 2>&1
-    $commandOutput = & { npm install --save three 2>&1 }
+    $commandOutput = @()
+    $output = & { npm install --save three *>&1 | Out-String }
+    $commandOutput += $output
     $exit_code = $LASTEXITCODE
     $nodeVersion = & node --version
     $commandOutput += "Using node.js version $nodeVersion"

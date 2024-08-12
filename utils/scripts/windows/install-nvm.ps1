@@ -89,13 +89,15 @@ try {
     exit $ERROR_EXTRACTING_NVM_INSTALLER
 }
 
+$output = $null
+$exit_code = 0
 # Run the installer
 try {
     $result.commandOutput += "Running the nvm-windows installer..."
-    $installOutput = Start-Process -FilePath $installerPath -Wait -PassThru | Tee-Object -Variable installOutput | Out-Null
+    $output = Start-Process -FilePath $installerPath -Wait | Tee-Object -Variable installOutput | Out-Null
     $result.commandOutput += $installOutput.StandardOutput
-    $result.commandOutput += "Successfully installed NVM (Node Version Manager)"
     $result.alreadyInstalled = $false
+    $result.commandOutput += $output
 } catch {
     $result.error = "Failed to run nvm-windows installer"
     $result.exception = $_.Exception.Message
@@ -107,12 +109,29 @@ try {
 # Clean up
 try {
     $result.commandOutput += "Cleaning up..."
-    Remove-Item -Path $zipPath -Force
+    #Remove-Item -Path $zipPath -Force
 } catch {
     $result.commandOutput += "Failed to clean up: $_"
 }
 
-$result.commandOutput += "nvm-windows installation completed."
+try {
+    $nvmVersion = & nvm version
+    $result.nvmVersion = $nvmVersion
+    $result.alreadyInstalled = $False
+    $result.commandOutput += "Node Version Manager (nvm) is installed."
+    $result | ConvertTo-Json
+    exit $SUCCESS
+} catch {
+    $result = @{
+        error = "Error installing NVM!"
+        exception = "Installation failed or was interrupted..."
+        exception_full = $result.commandOutput
+    }
+    $result | ConvertTo-Json
+    exit $ERROR_NVM_INSTALLATION_ERROR
+}
+
+$result.commandOutput += "Successfully installed NVM (Node Version Manager)"
 
 $result | ConvertTo-Json
 exit $SUCCESS
