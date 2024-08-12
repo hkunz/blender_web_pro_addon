@@ -8,7 +8,7 @@ class InstallationPropertyGroup(bpy.types.PropertyGroup):
     DEBUG_SKIP_INSTALL_CHECK: bpy.props.BoolProperty(
         name="Check Installation",
         description="Skip installation check only for testing purposes. Should always be False in production",
-        default=False,
+        default=True,
     ) # type: ignore
 
     check_installation: bpy.props.BoolProperty(

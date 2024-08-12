@@ -51,6 +51,9 @@ class OperatorScriptBase(OperatorGenericPopup):
         result = self.get_json(output)
         print("Converted json result:\n", result)
         self.handle_success(result, context)
+        if not result:
+            print("\nERROR:\nThe raw json output is not pure json, please check that commands don't print to the console by using *>&1 | Out-String in the ps1 file")
+            return
         cmd_output = result.get("commandOutput", [])
         self.report_command_output(cmd_output)
         UiUtils.update_ui(context)

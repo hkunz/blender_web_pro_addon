@@ -14,6 +14,8 @@ from blender_web_pro.operators.installation.operator_install_nodejs_choco import
 from blender_web_pro.operators.installation.operator_install_nvm import WEB_OT_OperatorInstallNVM # type: ignore
 from blender_web_pro.operators.installation.operator_install_threejs import WEB_OT_OperatorInstallThreeJS # type: ignore
 from blender_web_pro.operators.installation.operator_install_vite_dependency import WEB_OT_OperatorInstallViteDependency # type: ignore
+from blender_web_pro.operators.installation.operator_install_vite_dependency import WEB_OT_OperatorInstallViteDependency # type: ignore
+from blender_web_pro.operators.installation.operator_uninstall_web_pro_dependencies import WEB_OT_OperatorUninstallWebProDependencies # type: ignore
 from blender_web_pro.ui.property_groups.property_group_installation_properties import InstallationPropertyGroup # type: ignore
 from blender_web_pro.ui.property_groups.property_group_userinterface_properties import UserInterfacePropertyGroup # type: ignore
 from blender_web_pro.utils.utils import Utils # type: ignore
@@ -92,6 +94,7 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
             props.installation_status_choco == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED and \
             props.installation_status_nodejs == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED and \
             props.installation_status_nvm == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED
+        complete_installation = complete_installation or props.DEBUG_SKIP_INSTALL_CHECK
 
         self.draw_expanded_installation(context, layout, complete_installation)
 
@@ -224,6 +227,7 @@ def register() -> None:
     bpy.utils.register_class(WEB_OT_OperatorInstallThreeJS)
     bpy.utils.register_class(WEB_OT_OperatorInstallViteDependency)
     bpy.utils.register_class(WEB_OT_OperatorTestWeb)
+    bpy.utils.register_class(WEB_OT_OperatorUninstallWebProDependencies)
     bpy.types.Material.my_slot_setting = bpy.props.PointerProperty(type=MyPropertyGroup2)
     bpy.types.Scene.userinterface_props = bpy.props.PointerProperty(type=UserInterfacePropertyGroup)
     bpy.types.Scene.installation_props = bpy.props.PointerProperty(type=InstallationPropertyGroup)
@@ -247,6 +251,7 @@ def unregister() -> None:
     bpy.utils.unregister_class(WEB_OT_OperatorInstallThreeJS)
     bpy.utils.unregister_class(WEB_OT_OperatorInstallViteDependency)
     bpy.utils.unregister_class(WEB_OT_OperatorTestWeb)
+    bpy.utils.unregister_class(WEB_OT_OperatorUninstallWebProDependencies)
     del bpy.types.Material.my_slot_setting
     del bpy.types.Scene.expanded_installation
     del bpy.types.Scene.expanded_options
