@@ -82,7 +82,8 @@ try {
     $npmVersion = & npm --version
     $commandOutput += "Using npm version $npmVersion $LINE_END"
     if ($exit_code -eq 0) {
-        $commandOutput += "Successfully installed Three.js$LINE_END"
+        $commandOutput += "Installed Three.js into directory $DirectoryPath $LINE_END"
+        $commandOutput += "Successfully installed Three.js!$LINE_END"
     } else {
         $result = @{
             error = "Error installing Three.js."

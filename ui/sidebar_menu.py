@@ -19,6 +19,7 @@ from blender_web_pro.ui.property_groups.property_group_userinterface_properties 
 from blender_web_pro.utils.utils import Utils # type: ignore
 from blender_web_pro.utils.object_utils import ObjectUtils # type: ignore
 from blender_web_pro.utils.icons_manager import IconsManager  # type: ignore
+from blender_web_pro.utils.package_json import PackageJson # type: ignore
 
 IDNAME_ICONS = {
     "NodeSocketMaterial": "MATERIAL_DATA",
@@ -41,7 +42,7 @@ def on_depsgraph_update(scene, depsgraph=None):
     obj = context.active_object
     if not obj:
         return
-    properties: UserInterfacePropertyGroup = context.scene.userinterface_props # type: ignore
+    properties: UserInterfacePropertyGroup = context.scene.userinterface_props
     check_object_selection_change(context, properties, obj)
 
 def my_sample_update_rgb_nodes(self, context):
@@ -135,12 +136,22 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
             box = layout.box().column()
             #box.label(text="Project Directory", icon="FILEBROWSER")
             box.prop(properties, "output_directory")
-            self.create_install_button(box, WEB_OT_OperatorInstallThreeJS.bl_idname, text="Three.js")
-            self.create_install_button(box, WEB_OT_OperatorInstallViteDependency.bl_idname, text="Vite Dependency")
+            props: UserInterfacePropertyGroup = context.scene.userinterface_props
+            package_json = PackageJson()
+            threejs_version = package_json.get_threejs_version()
+            vite_version = package_json.get_vite_version()
+            package_json.set_directory(props.output_directory)
+            self.create_install_button(box, WEB_OT_OperatorInstallThreeJS.bl_idname, text="Three.js", state=bool(threejs_version), version=threejs_version)
+            self.create_install_button(box, WEB_OT_OperatorInstallViteDependency.bl_idname, text="Vite", state=bool(vite_version), version=vite_version)
             #col.prop(data=context.scene.render,property="fps",text="Frame Rate 2") # https://blender.stackexchange.com/questions/317553/how-to-exposure-render-settings-to-addon-panel/317565#317565
             #self.add_layout_gn_prop(layout, context.object.modifiers["Geometry Nodes"], "Socket_2") # https://blender.stackexchange.com/questions/317571/how-can-i-expose-geometry-nodes-properties-in-my-addon-panel/317586
             #col.operator(EXPORT_OT_file_vox.bl_idname, text="Export Button")
             #col.operator(WEB_OT_OperatorTestWeb.bl_idname, text="Test Web")
+
+    def create_install_dep_button(self, layout, operator, text, version):
+        row = layout.row(align=True)
+        text = "Install " + text if not version else text + " (" + version + ")"
+        row.operator(operator, text=text)
 
     def create_install_button(self, layout, operator, text, state=0, version=""):
         row = layout.row(align=True)

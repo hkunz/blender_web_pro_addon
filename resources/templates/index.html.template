@@ -50,5 +50,6 @@
     <footer>
         <p>&copy; 2024 Blender Web Pro</p>
     </footer>
+    <script type="module" src="/main.js"></script>
 </body>
 </html>
