@@ -32,3 +32,8 @@ class WEB_OT_OperatorInstallNodeJS(OperatorScriptBase):
 
         print(msg, node_version, npm_version, npx_version)
         create_generic_popup(message=f"{msg},,CHECKMARK|Node Version: {node_version},,CHECKMARK|NPM Version: {npm_version},,CHECKMARK|NPX Version: {npx_version},,CHECKMARK")
+
+    @classmethod
+    def poll(cls, context):
+        props: InstallationPropertyGroup = context.scene.installation_props
+        return props.installed_choco_v != ""

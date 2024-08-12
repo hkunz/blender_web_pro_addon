@@ -26,3 +26,8 @@ class WEB_OT_OperatorInstallNVM(OperatorScriptBase):
 
         print(msg, nvm_version)
         create_generic_popup(message=f"{msg},,CHECKMARK|nvm version: {nvm_version},,CHECKMARK")
+
+    @classmethod
+    def poll(cls, context):
+        props: InstallationPropertyGroup = context.scene.installation_props
+        return props.installed_nodejs_v != "" and props.installed_choco_v != ""
