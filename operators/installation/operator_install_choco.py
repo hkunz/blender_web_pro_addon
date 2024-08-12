@@ -17,8 +17,8 @@ class WEB_OT_OperatorInstallChoco(OperatorScriptBase):
         #self.report({'INFO'}, msg)
 
     def draw(self, context) -> None:
-        self.message = "Proceed with Chocolatey Installation?"
-        self.exec_message = "Installing Chocolatey... Please wait..."
+        self.message = "Proceed with Chocolatey Installation?|Please wait while installation completes.,,INFO|This may take several minutes.,,INFO"
+        self.exec_message = "Installing Chocolatey ... Please wait ..."
         super().draw(context)
 
     def get_script_path(self):

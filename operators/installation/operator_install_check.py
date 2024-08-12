@@ -17,7 +17,7 @@ class WEB_OT_OperatorInstallCheck(OperatorScriptBase):
         return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-check.ps1')
 
     def draw(self, context) -> None:
-        self.message = "Check if all prerequisites are installed?"
+        self.message = "Check if all prerequisites are installed?|This may take a few moments.,,INFO"
         self.exec_message = "Checking prerequisites... Please wait..."
         super().draw(context)
 
