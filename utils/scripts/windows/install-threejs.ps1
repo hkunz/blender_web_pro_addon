@@ -70,16 +70,31 @@ catch {
 
 try {
     # throw "Simulate Exception Test"
-    npm install --save three | Tee-Object -Variable commandOutput | Out-Null
+    # npm install --save three | Tee-Object -Variable commandOutput | Out-Null
+    # $commandOutput = npm install --save three 2>&1
+    $commandOutput = & { npm install --save three 2>&1 }
+    $exit_code = $LASTEXITCODE
     $nodeVersion = & node --version
+    $commandOutput += "Using node.js version $nodeVersion"
     $npmVersion = & npm --version
-    $commandOutput += "Successfully installed Three.js"
+    $commandOutput += "Using npm version $npmVersion"
+    if ($exit_code -eq 0) {
+        $commandOutput += "Successfully installed Three.js"
+    } else {
+        $result = @{
+            error = "Error installing Three.js."
+            exception = "Installation failed with exit code: $exit_code."
+            exception_full = $commandOutput
+        }
+        $result | ConvertTo-Json
+        exit $ERROR_INSTALLING_THREE_JS
+    }
     $result = @{
         nodeVersion = $nodeVersion
         npmVersion = $npmVersion
         alreadyInstalled = $false
         directoryPath = $DirectoryPath
-        commandOutput = @($commandOutput)
+        commandOutput = $commandOutput
     }
     $result | ConvertTo-Json
 } catch {

@@ -52,11 +52,23 @@ try {
 
 try {
     #throw "Simulate Exception Test"
-    choco install -y nodejs-lts | Tee-Object -Variable commandOutput | Out-Null
+    # choco install -y nodejs-lts | Tee-Object -Variable commandOutput | Out-Null
+    $commandOutput = & { choco install -y nodejs-lts 2>&1 }
+    $exit_code = $LASTEXITCODE
+    if ($exit_code -eq 0) {
+        $commandOutput += "Successfully installed Node.js"
+    } else {
+        $result = @{
+            error = "Error installing Node.js!"
+            exception = "Installation failed with exit code: $exit_code."
+            exception_full = $commandOutput
+        }
+        $result | ConvertTo-Json
+        exit $ERROR_INSTALLING_NODE_JS
+    }
     $nodeVersion = & node --version
     $npmVersion = & npm --version
     $npxVersion = & npx --version
-    $commandOutput += "Successfully installed Node.js"
     $result = @{
         nodeVersion = $nodeVersion
         npmVersion = $npmVersion

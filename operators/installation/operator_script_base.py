@@ -41,7 +41,9 @@ class OperatorScriptBase(bpy.types.Operator):
         output = self.run_script(script_path, *script_args)
         if output is None:
             return
+        print("Raw output to convert to json =======\n", output)
         result = self.get_json(output)
+        print("Converted json result:\n", result)
         self.handle_success(result, context)
         cmd_output = result.get("commandOutput", [])
         self.report_command_output(cmd_output)

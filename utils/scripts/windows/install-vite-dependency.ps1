@@ -67,10 +67,24 @@ catch {
 
 try {
     # throw "Simulate Exception Test"
-    npm install --save-dev vite | Tee-Object -Variable commandOutput | Out-Null
+    # npm install --save-dev vite | Tee-Object -Variable commandOutput | Out-Null
+    $commandOutput = & { npm install --save-dev vite 2>&1 }
+    $exit_code = $LASTEXITCODE
     $nodeVersion = & node --version
+    $commandOutput += "Using node.js version $nodeVersion"
     $npmVersion = & npm --version
-    $commandOutput += "Successfully installed Vite dependency"
+    $commandOutput += "Using npm version $npmVersion"
+    if ($exit_code -eq 0) {
+        $commandOutput += "Successfully installed Vite dependency"
+    } else {
+        $result = @{
+            error = "Error installing Vite dependency."
+            exception = "Installation failed with exit code: $exit_code."
+            exception_full = $commandOutput
+        }
+        $result | ConvertTo-Json
+        exit $ERROR_INSTALLING_VITE_DEPENDENCY
+    }
     $result = @{
         nodeVersion = $nodeVersion
         npmVersion = $npmVersion
