@@ -83,7 +83,8 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
     def draw(self, context) -> None:
         layout: bpy.types.UILayout = self.layout
         props = context.scene.installation_props
-        if props.check_installation:
+
+        if props.check_installation and not props.DEBUG_SKIP_INSTALL_CHECK:
             layout.operator(WEB_OT_OperatorInstallCheck.bl_idname, text="Check Installation")
             return
 

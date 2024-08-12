@@ -4,9 +4,10 @@ import requests
 import json
 import bpy
 
-from blender_web_pro.operators.common.operator_generic_popup import create_generic_popup # type: ignore
+from blender_web_pro.operators.common.operator_generic_popup import create_generic_popup, OperatorGenericPopup # type: ignore
+from blender_web_pro.utils.ui_utils import UiUtils # type: ignore
 
-class OperatorScriptBase(bpy.types.Operator):
+class OperatorScriptBase(OperatorGenericPopup):
     bl_options = {'INTERNAL'}
 
     LINE_END = '{LINE_END}'
@@ -52,6 +53,7 @@ class OperatorScriptBase(bpy.types.Operator):
         self.handle_success(result, context)
         cmd_output = result.get("commandOutput", [])
         self.report_command_output(cmd_output)
+        UiUtils.update_ui(context)
 
     def report_command_output(self, output_list):
         for output in output_list:

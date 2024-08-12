@@ -16,6 +16,11 @@ class WEB_OT_OperatorInstallChoco(OperatorScriptBase):
         #print(msg)
         #self.report({'INFO'}, msg)
 
+    def draw(self, context) -> None:
+        self.message = "Proceed with Chocolatey Installation?"
+        self.exec_message = "Installing Chocolatey... Please wait..."
+        super().draw(context)
+
     def get_script_path(self):
         return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-choco.ps1')
 

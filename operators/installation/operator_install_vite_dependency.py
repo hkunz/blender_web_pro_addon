@@ -10,6 +10,9 @@ class WEB_OT_OperatorInstallViteDependency(WEB_OT_OperatorInstallDependency):
     bl_label = "Install Vite via npm operator"
     bl_description = "Install Vite as a development dependency in your project"
 
+    def invoke(self, context, _: bpy.types.Event) -> set[str]:
+        return self.execute(context)
+
     def get_script_path(self):
         return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-vite-dependency.ps1')
 

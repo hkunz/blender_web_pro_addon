@@ -9,12 +9,17 @@ from blender_web_pro.ui.property_groups.property_group_installation_properties i
 
 class WEB_OT_OperatorInstallCheck(OperatorScriptBase):
     bl_idname = "blender_web_pro.install_check_operator"
-    bl_label = "Installation Check Operator"
+    bl_label = "Check Installation Prerequisites"
     bl_description = "Check installation status"
     bl_options = {'REGISTER'}
 
     def get_script_path(self):
         return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-check.ps1')
+
+    def draw(self, context) -> None:
+        self.message = "Check if all prerequisites are installed?"
+        self.exec_message = "Checking prerequisites... Please wait..."
+        super().draw(context)
 
     def execute_script(self, context):
         self.set_execution_policy()

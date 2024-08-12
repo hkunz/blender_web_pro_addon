@@ -9,6 +9,11 @@ class WEB_OT_OperatorInstallNVM(OperatorScriptBase):
     bl_label = "Install NVM"
     bl_description = "Install NVM (Node Version Manager) which is a tool for managing multiple versions of Node.js on a single machine, allowing users to easily switch between different versions for different projects"
 
+    def draw(self, context) -> None:
+        self.message = "Proceed with Node Version manager Installation?"
+        self.exec_message = "Installing Node Version manager... Please wait..."
+        super().draw(context)
+
     def get_script_path(self):
         return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-nvm.ps1')
 

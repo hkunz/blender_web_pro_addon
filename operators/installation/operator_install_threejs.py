@@ -9,6 +9,9 @@ class WEB_OT_OperatorInstallThreeJS(WEB_OT_OperatorInstallDependency):
     bl_label = "Install Three.js via npm operator"
     bl_description = "Install Three.js (via npm) which is a JavaScript library that simplifies the creation and rendering of 3D graphics in the web browser using WebGL"
 
+    def invoke(self, context, _: bpy.types.Event) -> set[str]:
+        return self.execute(context)
+
     def get_script_path(self):
         return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-threejs.ps1')
 

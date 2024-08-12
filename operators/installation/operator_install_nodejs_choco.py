@@ -9,6 +9,11 @@ class WEB_OT_OperatorInstallNodeJS(OperatorScriptBase):
     bl_label = "Install Node.js"
     bl_description = "Install Node.js which is a JavaScript runtime built on Chrome's V8 JavaScript engine"
 
+    def draw(self, context) -> None:
+        self.message = "Proceed with Node.js Installation?"
+        self.exec_message = "Installing Node.js... Please wait..."
+        super().draw(context)
+
     def get_script_path(self):
         return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-nodejs-choco.ps1')
 
