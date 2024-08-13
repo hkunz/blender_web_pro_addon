@@ -38,6 +38,7 @@ $result = @{
     nvm_version = ""
 
     commandOutput = @()
+    errors = @()
 }
 
 Init-Log "$PSScriptRoot\..\..\..\logs\install-check.log"
@@ -50,15 +51,15 @@ if ((Get-Command choco -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_CHOC) 
     try {
         if ($TEST_INSTALL_CHOC_EXCEPT) {throw "Test Exception"}
         $version = & choco --version
-        $result.choco = $INSTALLED # Choco installed successfully
-        $result.choco_version = $version
         $msg = "$install_name $version is installed!"
+        $result.choco = $INSTALLED
+        $result.choco_version = $version
         $result.commandOutput += $msg + $LINE_END
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
-        $result.choco = $INSTALLATION_ERROR
         $msg = "$install_name $version is installed but error in execution!"
-        $result.commandOutput += $msg + $LINE_END
+        $result.choco = $INSTALLATION_ERROR
+        $result.errors += $msg
         Write-Error "$msg"
     }
 } else {
@@ -78,16 +79,16 @@ if ((Get-Command node -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NODE) {
     try {
         if ($TEST_INSTALL_NODE_EXCEPT) {throw "Test Exception"}
         $version = & node --version
+        $msg = "$install_name $version is installed!"
+        $nodejs_installed = $True
         $result.node = $INSTALLED
         $result.node_version = $version
-        $nodejs_installed = $True
-        $msg = "$install_name $version is installed!"
         $result.commandOutput += $msg + $LINE_END
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
-        $result.node = $INSTALLATION_ERROR
         $msg = "$install_name $version is installed but there was an error trying to run it!"
-        $result.commandOutput += $msg + $LINE_END
+        $result.node = $INSTALLATION_ERROR
+        $result.errors += $msg
         Write-Error "$msg"
     }
 } else {
@@ -104,21 +105,24 @@ if ((Get-Command npm -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NPM) {
     try {
         if ($TEST_INSTALL_NPM_EXCEPT) {throw "Test Exception"}
         $version = & npm --version
+        $msg = "$install_name $version is installed!"
         $result.npm = $INSTALLED
         $result.npm_version = $version
-        $msg = "$install_name $version is installed!"
         $result.commandOutput += $msg + $LINE_END
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
-        $result.npm = $INSTALLATION_ERROR
         $msg = "$install_name $version is installed but there was an error trying to run it!"
-        $result.commandOutput += $msg + $LINE_END
+        $result.node = $INSTALLATION_ERROR
+        $result.npm = $INSTALLATION_ERROR
+        $result.errors += $msg
         Write-Error "$msg"
     }
 } else {
-     if (-not $nodejs_installed) {
+     if ($nodejs_installed) {
         $msg = "ERROR: $install_name should have been available with the installation of '$node_js_name'! Try to re-install '$node_js_name' manually."
-        $result.commandOutput += $msg + $LINE_END
+        $result.node = $INSTALLATION_ERROR
+        $result.npm = $INSTALLATION_ERROR
+        $result.errors += $msg
         Write-Error $msg
     } else {
         $msg = "$install_name is not yet installed. NPM becomes available when installing '$node_js_name'. You can either install '$node_js_name' manually or with a click of a button within the addon."
@@ -135,21 +139,24 @@ if ((Get-Command npx -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NPX) {
     try {
         if ($TEST_INSTALL_NPX_EXCEPT) {throw "Test Exception"}
         $version = & npx --version
+        $msg = "$install_name $version is installed!"
         $result.npx = $INSTALLED
         $result.npx_version = $version
-        $msg = "$install_name $version is installed!"
         $result.commandOutput += $msg + $LINE_END
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
-        $result.npx = $INSTALLATION_ERROR
         $msg = "$install_name $version is installed but there was an error trying to run it!"
-        $result.commandOutput += $msg + $LINE_END
+        $result.node = $INSTALLATION_ERROR
+        $result.npx = $INSTALLATION_ERROR
+        $result.errors += $msg
         Write-Error "$msg"
     }
 } else {
-    if (-not $nodejs_installed) {
+    if ($nodejs_installed) {
         $msg = "ERROR: $install_name should have been available with the installation of '$node_js_name'! Try to re-install '$node_js_name' manually."
-        $result.commandOutput += $msg + $LINE_END
+        $result.node = $INSTALLATION_ERROR
+        $result.npx = $INSTALLATION_ERROR
+        $result.errors += $msg
         Write-Error $msg
     } else {
         $msg = "$install_name is not yet installed. It becomes available when installing '$node_js_name'. You can either install '$node_js_name' manually or with a click of a button within the addon."
@@ -166,15 +173,15 @@ if ((Get-Command nvm -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NVM) {
     try {
         if ($TEST_INSTALL_NVM_EXCEPT) {throw "Test Exception"}
         $version = & nvm version
+        $msg = "$install_name $version is installed!"
         $result.nvm = $INSTALLED
         $result.nvm_version = $version
-        $msg = "$install_name $version is installed!"
         $result.commandOutput += $msg + $LINE_END
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
-        $result.nvm = $INSTALLATION_ERROR
         $msg = "$install_name $version is installed but there was an error trying to run it!"
-        $result.commandOutput += $msg + $LINE_END
+        $result.nvm = $INSTALLATION_ERROR
+        $result.errors += $msg
         Write-Error "$msg"
     }
 } else {

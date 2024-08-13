@@ -56,3 +56,12 @@ class WEB_OT_OperatorInstallCheck(OperatorScriptBase):
         props.installed_npm_v = result.get("npm_version", "Unknown Version")
         props.installed_npx_v = result.get("npx_version", "Unknown Version")
         props.installed_nvm_v = result.get("nvm_version", "Unknown Version")
+
+        errors = result.get("errors")
+        if not errors or not len(errors):
+            return
+        for line in errors:
+            self.report({'ERROR'}, line)
+        create_generic_popup(message=f"There are errors in your installation,,CANCEL,,1|Please check the Info Panel for the errors.,,TRIA_RIGHT")
+
+

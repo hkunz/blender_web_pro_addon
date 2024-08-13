@@ -2,17 +2,25 @@
 . "$PSScriptRoot\common\constants.ps1"
 . "$PSScriptRoot\common\utils.ps1"
 
+Write-Host ""
+Write-Host "$PSCommandPath" -ForegroundColor Green
+Write-Host "Preparing installation for Chocolatey ..." -ForegroundColor Yellow
+
+Init-Log "$PSScriptRoot\..\..\..\logs\install-choco.log"
 
 try {
+    Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process -Force"
     Set-ExecutionPolicy Bypass -Scope Process -Force
-    # throw "Simulate Exception Test"
+    throw "ERROR ---"
 } catch {
+    msg = "Error setting execution policy!"
+    Write-Error "$msg"
     $result = @{
-        error = "Error setting execution policy!"
+        error = "$msg"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_SETTING_EXECUTION_POLICY
 }
 
