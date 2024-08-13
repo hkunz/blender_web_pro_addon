@@ -2,7 +2,6 @@
 . "$PSScriptRoot\common\constants.ps1"
 . "$PSScriptRoot\common\utils.ps1"
 
-$logFile = "$PSScriptRoot\progress.log"
 
 try {
     Set-ExecutionPolicy Bypass -Scope Process -Force

@@ -20,7 +20,7 @@ $result = @{
     commandOutput = @()
 }
 
-Init-Log
+Init-Log "$PSScriptRoot\..\..\..\logs\install-check.log"
 
 # Check if Chocolatey is already installed
 if (Get-Command choco -ErrorAction SilentlyContinue) {
