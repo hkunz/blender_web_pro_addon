@@ -26,13 +26,18 @@ class OperatorScriptBase(OperatorGenericPopup):
         try:
             command = ["powershell", "-File", script_path] + list(args)
             result = subprocess.run(command, capture_output=False, text=True, check=True)
-            return result.stdout
+            return True
         except subprocess.CalledProcessError as e:
             if e.returncode >= 10:
-                self.handle_error(e.stdout, e.returncode)
+                self.on_script_exit_error(e.stdout, e.returncode)
             else:
-                self.handle_unknown_error(e)
-        return None
+                self.on_unknown_script_exit_error(e)
+        except Exception as e:
+            msg = f"Unknown error occured while running subprocess"
+            print(msg)
+            self.report(msg)
+            create_generic_popup(message=f"{msg},,CANCEL,1")
+        return False
 
     def get_json(self, raw):
         try:
@@ -43,7 +48,8 @@ class OperatorScriptBase(OperatorGenericPopup):
             create_generic_popup(message=f"Script execution failed,,CANCEL,,1|Invalid JSON output,,CANCEL,,1")
         return json.loads("{}")
 
-    def get_logs_json(self, file):
+    def get_logs_json(self):
+        file = self.get_log_file()
         try:
             with open(file, 'r') as file:
                 raw_content = file.read()
@@ -56,17 +62,16 @@ class OperatorScriptBase(OperatorGenericPopup):
             create_generic_popup(message=f"Error reading log file,,CANCEL,,1|{file},,CANCEL,,1")
         return json.loads("{}")
 
-
     def execute_script(self, context):
         script_path = self.get_script_path()
         script_args = self.get_script_args()
-        self.run_script(script_path, *script_args)
-        log_file = self.get_log_file()
-        result = self.get_logs_json(log_file)
-        self.handle_success(result, context)
+        success = self.run_script(script_path, *script_args)
+        result = self.get_logs_json()
         if not result:
             print("\nERROR:\nThe raw json output is not pure json, please check that commands don't print to the console by using *>&1 | Out-String in the ps1 file")
             return
+        if success:
+            self.handle_success(result, context)
         cmd_output = result.get("commandOutput", [])
         self.report_command_output(cmd_output)
         UiUtils.update_ui(context)
@@ -79,8 +84,8 @@ class OperatorScriptBase(OperatorGenericPopup):
                 if line.strip():  # Optional: Skip empty lines
                     self.report({'INFO'}, line)
 
-    def handle_error(self, stdout, errorCode):
-        result = self.get_json(stdout)
+    def on_script_exit_error(self, stdout, errorCode):
+        result = self.get_logs_json()
         error = result.get("error", "Unknown error")
         exception = result.get("exception", None)
         exception_full = result.get("exception_full", None)
@@ -92,9 +97,9 @@ class OperatorScriptBase(OperatorGenericPopup):
         msg = "".join(msg).replace(OperatorScriptBase.LINE_END, OperatorScriptBase.NEW_LINE)
         self.report({'ERROR'}, f"{msg}")
 
-    def handle_unknown_error(self, e):
+    def on_unknown_script_exit_error(self, e):
         self.report({'ERROR'}, str(e))
-        create_generic_popup(message=f"Script execution failed with error code {str(e.returncode)},,CANCEL,,1|{e},,CANCEL,,1")
+        create_generic_popup(message=f"Unknown script exit error,,CANCEL,,1|Script exit with error code {str(e.returncode)},,TRIA_RIGHT")
 
     def handle_success(self, _):
         raise NotImplementedError("Subclasses must implement this method")

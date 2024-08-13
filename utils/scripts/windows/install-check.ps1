@@ -86,7 +86,7 @@ if ((Get-Command node -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NODE) {
         $result.commandOutput += $msg + $LINE_END
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
-        $msg = "$install_name $version is installed but there was an error trying to run it!"
+        $msg = "$install_name $version is installed, but an error occurred during execution."
         $result.node = $INSTALLATION_ERROR
         $result.errors += $msg
         Write-Error "$msg"
@@ -111,7 +111,7 @@ if ((Get-Command npm -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NPM) {
         $result.commandOutput += $msg + $LINE_END
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
-        $msg = "$install_name $version is installed but there was an error trying to run it!"
+        $msg = "$install_name $version is installed, but an error occurred during execution."
         $result.node = $INSTALLATION_ERROR
         $result.npm = $INSTALLATION_ERROR
         $result.errors += $msg
@@ -145,7 +145,7 @@ if ((Get-Command npx -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NPX) {
         $result.commandOutput += $msg + $LINE_END
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
-        $msg = "$install_name $version is installed but there was an error trying to run it!"
+        $msg = "$install_name $version is installed, but an error occurred during execution."
         $result.node = $INSTALLATION_ERROR
         $result.npx = $INSTALLATION_ERROR
         $result.errors += $msg
@@ -179,7 +179,7 @@ if ((Get-Command nvm -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NVM) {
         $result.commandOutput += $msg + $LINE_END
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
-        $msg = "$install_name $version is installed but there was an error trying to run it!"
+        $msg = "$install_name $version is installed, but an error occurred during execution."
         $result.nvm = $INSTALLATION_ERROR
         $result.errors += $msg
         Write-Error "$msg"

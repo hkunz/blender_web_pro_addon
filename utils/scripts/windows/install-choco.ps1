@@ -8,15 +8,16 @@ Write-Host "Preparing installation for Chocolatey ..." -ForegroundColor Yellow
 
 Init-Log "$PSScriptRoot\..\..\..\logs\install-choco.log"
 
+$TEST_FORCE_INSTALL = 1
+
 try {
     Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process -Force"
     Set-ExecutionPolicy Bypass -Scope Process -Force
-    throw "ERROR ---"
 } catch {
-    msg = "Error setting execution policy!"
-    Write-Error "$msg"
+    $err = "Error setting execution policy!"
+    Write-Error "$err"
     $result = @{
-        error = "$msg"
+        error = $err
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
@@ -25,34 +26,42 @@ try {
 }
 
 try {
+    Write-Host "Setting security protocol -bor 3072"
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
 } catch {
+    $err = "Error setting security protocol!"
+    Write-Error "$err"
     $result = @{
-        error = "Error setting security protocol!"
+        error = $err
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_SETTING_SECURITY_PROTOCOL
 }
 
+$install_name = "Chocolatey"
 $source = "https://community.chocolatey.org/install.ps1"
 $version = "Unknown Version"
 $chocoPath = "Unknown Chocolatey Path"
-$commandOutput = @()
 
 # Check if Chocolatey is already installed
-if (Get-Command choco -ErrorAction SilentlyContinue) {
+Write-Host "Checking for existing $install_name installation ..."
+$output = Get-Command choco -ErrorAction SilentlyContinue
+if ((Get-Command choco -ErrorAction SilentlyContinue) -and !$TEST_FORCE_INSTALL) {
     try {
         $version = choco --version
         $chocoPath = (Get-Command choco).Source
+        Write-Host "$install_name $version is already installed" -ForegroundColor Yellow
     } catch {
+        Write-Error $_.ToString()
         $result = @{
-            error = "Error running choco but is installed already!"
+            $msg = "$install_name $version is installed, but an error occurred during execution."
+            error = $msg
             exception = $_.Exception.Message
             exception_full = $_.ToString()
         }
-        $result | ConvertTo-Json
+        Log-Progress -message ($result | ConvertTo-Json)
         exit $ERROR_RUNNING_INSTALLED_CHOCOLATEY
     }
     $result = @{
@@ -60,43 +69,40 @@ if (Get-Command choco -ErrorAction SilentlyContinue) {
         alreadyInstalled = $true
         chocoPath = $chocoPath
         source = $source
-        commandOutput = @("Chocolatey is already installed!$LINE_END")
+        commandOutput = @("$install_name $version is already installed!")
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $SUCCESS
 }
 
+Write-Host "Ready to install $install_name ..."
 try {
-    #$output = & { iex (Get-Content "install-choco-community.ps1" -Raw) *>&1 | Out-String }
-    $output = & "$PSScriptRoot\install-choco-community.ps1" *>&1 | Out-String
-    $commandOutput += $output + $LINE_END
+    & "$PSScriptRoot\install-choco-community.ps1"
     #$scriptContent = (New-Object System.Net.WebClient).DownloadString($source)
     #$output = & { iex $scriptContent *>&1 | Out-String }
     #$commandOutput += $output + $LINE_END
 } catch {
+    Write-Error "Error occurred while trying to install $PSScriptRoot\install-choco-community.ps1"
     $result = @{
-        error = "Error downloading/executing installation script!"
+        error = "Error executing Chocolatey installation!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_DOWNLOADING_CHOCOLATEY
 }
-
-$chocoPath = "Undefined"
-$version = "Undefined"
-$result = $null
 
 try {
     $version = choco --version
     $chocoPath = (Get-Command choco).Source
 } catch {
+    Write-Error "$install_name $version is installed, but an error occurred during execution."
     $result = @{
-        error = "Error running choco after installation!"
+        error = "Error executing $install_name!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_RUNNING_CHOCOLATEY_AFTER_INSTALLATION
 }
 
@@ -112,7 +118,7 @@ try {
             exception = "Installation failed with exit code: $exit_code."
             exception_full = $commandOutput
         }
-        $result | ConvertTo-Json
+        Log-Progress -message ($result | ConvertTo-Json)
         exit $ERROR_UPGRADING_CHOCOLATEY
     }
     $result = @{
@@ -122,14 +128,14 @@ try {
         source = $source
         commandOutput = $commandOutput
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
 } catch {
     $result = @{
         error = "Error upgrading Chocolatey!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_UPGRADING_CHOCOLATEY
 }
 
