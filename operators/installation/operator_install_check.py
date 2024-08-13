@@ -34,9 +34,19 @@ class WEB_OT_OperatorInstallCheck(OperatorScriptBase):
         if platform.system() != 'Windows':
             print("This script can only be run on Windows.")
             return
-        command = f'Set-ExecutionPolicy {policy} -Scope {scope} -Force'
+        command = (
+            f'Write-Host "{os.path.abspath(__file__)}" -ForegroundColor Blue; '
+            '$psVersion = "$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Build)"; '
+            'Write-Host "PowerShell version: $psVersion" -ForegroundColor Cyan; '
+            f'$cmd = "Set-ExecutionPolicy {policy} -Scope {scope} -Force"; '
+            'Write-Host "Executing command: $cmd" -ForegroundColor White; '
+            'Invoke-Expression $cmd; '
+            '$output = Get-ExecutionPolicy; '
+            'Write-Host "Get-ExecutionPolicy is set to $output" -ForegroundColor Yellow'
+        )
+
         try:
-            result = subprocess.run(['powershell', '-Command', command], capture_output=True, text=True, check=True)
+            result = subprocess.run(['powershell', '-Command', command], capture_output=False, text=True, check=True)
             self.report({'INFO'}, f"Execution policy set to {policy} successfully.")
         except subprocess.CalledProcessError as e:
             self.report({'ERROR'}, f"Failed to set execution policy. Error: {e.stderr}")
