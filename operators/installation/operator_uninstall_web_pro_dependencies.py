@@ -5,6 +5,8 @@ from blender_web_pro.operators.installation.operator_script_base import Operator
 from blender_web_pro.ui.property_groups.property_group_installation_properties import InstallationPropertyGroup # type: ignore
 from blender_web_pro.utils.file_utils import FileUtils # type: ignore
 
+# Enable "Developer Extras" or bpy.context.preferences.view.show_developer_ui = True to use F3 > Search Operator
+
 class WEB_OT_OperatorUninstallWebProDependencies(OperatorScriptBase):
     bl_idname = "blender_web_pro.uninstall_dependencies"
     bl_label = "Uninstall Blender Web Pro Dependencies"
@@ -29,5 +31,5 @@ class WEB_OT_OperatorUninstallWebProDependencies(OperatorScriptBase):
         props.installed_nodejs_v = ""
         props.installed_npm_v = ""
         print("Unintsalled Chocolate, Node.js, Node Version Manager (NVM) successfully")
-        message = "Chocolatey is not installed|No directory: 'C:\ProgramData\chocolatey' found" if no_choco_installed else f"Uninstalled the following Web Pro Dependencies:|Chocolatey,,CHECKMARK|Node.js,,CHECKMARK|Node Version Manager(NVM),,CHECKMARK"
+        message = "Chocolatey is not installed|No directory: 'C:\ProgramData\chocolatey' found" if no_choco_installed else f"Uninstalled the following Web Pro Dependencies:|Chocolatey,,CHECKMARK|Node.js,,CHECKMARK|Node Version Manager (NVM),,CHECKMARK"
         create_generic_popup(message=message)

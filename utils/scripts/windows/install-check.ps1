@@ -1,3 +1,5 @@
+. "$PSScriptRoot\common\utils.ps1"
+
 $NOT_INSTALLED = 0
 $INSTALLED = 1
 $INSTALLATION_ERROR = 2
@@ -17,6 +19,8 @@ $result = @{
 
     commandOutput = @()
 }
+
+Init-Log
 
 # Check if Chocolatey is already installed
 if (Get-Command choco -ErrorAction SilentlyContinue) {

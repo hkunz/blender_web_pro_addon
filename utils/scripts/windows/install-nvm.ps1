@@ -1,5 +1,6 @@
-. "$PSScriptRoot\exit-codes.ps1"
-. "$PSScriptRoot\constants.ps1"
+. "$PSScriptRoot\common\exit-codes.ps1"
+. "$PSScriptRoot\common\constants.ps1"
+. "$PSScriptRoot\common\utils.ps1"
 
 $nvmUrl = "https://github.com/coreybutler/nvm-windows/releases/download/1.1.9/nvm-setup.zip"
 $zipPath = "nvm-setup.zip"

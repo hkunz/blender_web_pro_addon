@@ -2,8 +2,9 @@ param (
     [string]$DirectoryPath
 )
 
-. "$PSScriptRoot\exit-codes.ps1"
-. "$PSScriptRoot\constants.ps1"
+. "$PSScriptRoot\common\exit-codes.ps1"
+. "$PSScriptRoot\common\constants.ps1"
+. "$PSScriptRoot\common\utils.ps1"
 
 try {
     Set-ExecutionPolicy Bypass -Scope Process -Force
