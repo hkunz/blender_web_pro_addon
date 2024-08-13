@@ -10,7 +10,7 @@ Write-Host "Preparing installation for $install_name ..." -ForegroundColor White
 
 Init-Log "$PSScriptRoot\..\..\..\logs\install-nodejs-choco.log"
 
-$TEST_FORCE_INSTALL = 1
+$TEST_FORCE_INSTALL = 0
 
 <#
 When you install Node.js via Chocolatey,
@@ -18,8 +18,9 @@ it includes npx, and both the Node.js runtime and npm, which is the default pack
 So after installing Node.js with this command, you should have npm available for managing Node.js packages.
 #>
 
+# Set Execution Policy
+Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process -Force"
 try {
-    Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process -Force"
     Set-ExecutionPolicy Bypass -Scope Process -Force
 } catch {
     $result = @{

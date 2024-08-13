@@ -33,7 +33,6 @@ class WEB_OT_OperatorInstallNVM(OperatorScriptBase):
         props.installation_status_nvm = InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED
         props.installed_nvm_v = nvm_version
 
-        print(msg, nvm_version)
         create_generic_popup(message=f"{msg},,CHECKMARK|nvm version: {nvm_version},,CHECKMARK")
 
     @classmethod

@@ -10,8 +10,9 @@ Init-Log "$PSScriptRoot\..\..\..\logs\install-choco.log"
 
 $TEST_FORCE_INSTALL = 0
 
+# Set Execution Policy
+Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process -Force"
 try {
-    Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process -Force"
     Set-ExecutionPolicy Bypass -Scope Process -Force
 } catch {
     $err = "Error setting execution policy!"

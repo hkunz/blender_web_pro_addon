@@ -2,6 +2,16 @@
 . "$PSScriptRoot\common\constants.ps1"
 . "$PSScriptRoot\common\utils.ps1"
 
+Write-Host ""
+Write-Host "$PSCommandPath" -ForegroundColor Blue
+Write-Host "Preparing installation for Node Version Manager (NVM) ..." -ForegroundColor White
+
+Init-Log "$PSScriptRoot\..\..\..\logs\install-nvm.log"
+
+$TEST_FORCE_INSTALL = 0
+$TEST_SKIP_DOWNLOAD = 0
+$TEST_SKIP_EXTRACTION = 0
+
 $nvmUrl = "https://github.com/coreybutler/nvm-windows/releases/download/1.1.9/nvm-setup.zip"
 $zipPath = "nvm-setup.zip"
 $installPath = "$env:USERPROFILE\nvm"
@@ -28,112 +38,126 @@ try {
 }
 #>
 
+# Set Execution Policy
+Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process -Force"
 try {
     Set-ExecutionPolicy Bypass -Scope Process -Force
-    # throw "Simulate Exception Test"
 } catch {
+    Write-Error $_.ToString()
     $result = @{
         error = "Error setting execution policy!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_SETTING_EXECUTION_POLICY
 }
 
+# Check if Node.js is already installed
+Write-Host "Checking for existing Node.js installation ..."
 try {
-    # throw "Simulate Exception Test"
-    $npmVersion = & npm --version
+    $node_version = & node --version
+    Write-Host "Node.js $node_version is already installed" -ForegroundColor Yellow
 } catch {
+    Write-Error $_.ToString()
     $result = @{
-        error = "No Node.js installed. You need to install it first!"
+        error = "Node.js is required to be installed first!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_NODE_JS_INSTALLATION_REQUIRED
 }
 
 # Check if NVM is already installed
+Write-Host "Checking for existing Node Version Manager (NVM) installation ..."
 try {
-    # throw "Simulate Exception Test"
+    if ($TEST_FORCE_INSTALL) {
+        throw "Simulate NVM not installed"
+    }
     $nvmVersion = & nvm version
     $result.nvmVersion = $nvmVersion
     $result.alreadyInstalled = $true
-    $result.commandOutput += "Node Version Manager (nvm) is already installed.$LINE_END"
-    $result | ConvertTo-Json
+    $result.commandOutput = @("Node Version Manager (NVM) is already installed.")
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $SUCCESS
 } catch {
-    $result.commandOutput += "NVM not installed, proceeding with installation.$LINE_END"
+    Write-Host "Node Version Manager (NVM) not installed, proceeding with installation."
 }
 
 # Download nvm-setup.zip
+Write-Host "Downloading nvm-windows installer ..."
 try {
-    $result.commandOutput += "Downloading nvm-windows installer...$LINE_END"
-    Invoke-WebRequest -Uri $nvmUrl -OutFile $zipPath
+    if (!$TEST_SKIP_DOWNLOAD) {
+        Invoke-WebRequest -Uri $nvmUrl -OutFile $zipPath
+    }
 } catch {
+    Write-Error $_.ToString()
     $result.error = "Failed to download nvm-windows installer: $_"
     $result.exception = $_.Exception.Message
     $result.exception_full = $_.ToString()
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_DOWNLOADING_NVM_INSTALLER
 }
 
 # Extract the installer
+Write-Host "Extracting nvm-windows installer ..."
 try {
-    $result.commandOutput += "Extracting nvm-windows installer...$LINE_END"
-    Expand-Archive -Path $zipPath -DestinationPath $installPath -Force
+    if (!$TEST_SKIP_EXTRACTION) {
+        Expand-Archive -Path $zipPath -DestinationPath $installPath -Force
+    }
 } catch {
+    Write-Error $_.ToString()
     $result.error = "Failed to extract nvm-windows installer: $_"
     $result.exception = $_.Exception.Message
     $result.exception_full = $_.ToString()
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_EXTRACTING_NVM_INSTALLER
 }
 
 $output = $null
 $exit_code = 0
 # Run the installer
+# Extract the installer
+Write-Host "Installing Node Version Manager (NVM) ..."
 try {
-    $result.commandOutput += "Running the nvm-windows installer...$LINE_END"
-    $output = Start-Process -FilePath $installerPath -Wait | Tee-Object -Variable installOutput | Out-Null
-    $result.commandOutput += $installOutput.StandardOutput + $LINE_END
+    # FIXME: There is no way to know if the installation was exited or not.. So for now it will always say successful installation
+    Start-Process -FilePath $installerPath -Wait
     $result.alreadyInstalled = $false
-    $result.commandOutput += $output + $LINE_END
 } catch {
+    Write-Error $_.ToString()
     $result.error = "Failed to run nvm-windows installer"
     $result.exception = $_.Exception.Message
     $result.exception_full = $_.ToString()
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_RUNNING_NVM_INSTALLER
 }
 
 # Clean up
+Write-Host "Cleaning installation files ..."
 try {
-    $result.commandOutput += "Cleaning up...$LINE_END"
     #Remove-Item -Path $zipPath -Force
 } catch {
+    Write-Error $_.ToString()
     $result.commandOutput += "Failed to clean up: $_ $LINE_END"
 }
 
+Write-Host "Testing installation with nvm version"
 try {
     $nvmVersion = & nvm version
     $result.nvmVersion = $nvmVersion
     $result.alreadyInstalled = $False
-    $result.commandOutput += "Node Version Manager (nvm) is installed.$LINE_END"
-    $result | ConvertTo-Json
-    exit $SUCCESS
 } catch {
+    Write-Error $_.ToString()
     $result = @{
-        error = "Error installing NVM!"
+        error = "Error installing Node Version Manager (NVM)!"
         exception = "Installation failed or was interrupted..."
         exception_full = $result.commandOutput
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_NVM_INSTALLATION_ERROR
 }
 
-$result.commandOutput += "Successfully installed NVM (Node Version Manager)$LINE_END"
-
-$result | ConvertTo-Json
+Write-Host "Successfully installed Node Version Manager (NVM)"
+Log-Progress -message ($result | ConvertTo-Json)
 exit $SUCCESS
