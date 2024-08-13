@@ -14,6 +14,9 @@ class WEB_OT_OperatorInstallCheck(OperatorScriptBase):
     bl_description = "Check installation status"
     bl_options = {'REGISTER'}
 
+    def get_log_file(self):
+        return os.path.join(FileUtils.get_addon_root_dir(), r'logs/install-check.log')
+
     def get_script_path(self):
         return os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/windows', 'install-check.ps1')
 

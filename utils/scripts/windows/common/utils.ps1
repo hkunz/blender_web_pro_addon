@@ -1,19 +1,26 @@
-$LOG_FILE = $null
+$global:LOG_FILE = $null
+
+$global:bold = "`e[1m"
+$global:reset = "`e[0m"
 
 function Log-Progress {
     param ([string]$message)
-    Add-Content -Path $LOG_FILE -Value $message
+    Add-Content -Path $global:LOG_FILE -Value $message
 }
 
 function Init-Log {
     param ([string]$LogFile)
-    $LOG_FILE = $LogFile
+    $global:LOG_FILE = $LogFile
     if (Test-Path $LogFile) {
+        $LogFile = Resolve-Path -Path $LogFile
         Clear-Content -Path $LogFile -Force
+        Write-Host "Clear log file: ${LogFile}" -ForegroundColor White
     } else {
         New-Item -Path $LogFile -ItemType File -Force
+        $LogFile = Resolve-Path -Path $LogFile
+        Write-Host "Created log file: ${LogFile}" -ForegroundColor White
     }
-    Set-FilePermissions -Path $LogFile
+    $output = Set-FilePermissions -Path $LogFile
 }
 
 function Set-FilePermissions {

@@ -36,7 +36,7 @@ class PackageJson:
             return
 
         if not os.path.isfile(file_path):
-            print(f"File not found: {file_path}")
+            #print(f"File not found: {file_path}")
             self.data = {}
             return
 

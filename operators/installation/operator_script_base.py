@@ -13,17 +13,19 @@ class OperatorScriptBase(OperatorGenericPopup):
     LINE_END = '{LINE_END}'
     NEW_LINE = '\n'
 
+    def get_log_file(self):
+        return NotImplementedError("Subclasses must implement this method")
+
     def get_script_path(self):
         raise NotImplementedError("Subclasses must implement this method")
 
     def get_script_args(self):
         return []  # Override in subclasses to provide arguments
 
-
     def run_script(self, script_path, *args):
         try:
             command = ["powershell", "-File", script_path] + list(args)
-            result = subprocess.run(command, capture_output=True, text=True, check=True)
+            result = subprocess.run(command, capture_output=False, text=True, check=True)
             return result.stdout
         except subprocess.CalledProcessError as e:
             if e.returncode >= 10:
@@ -34,22 +36,33 @@ class OperatorScriptBase(OperatorGenericPopup):
 
     def get_json(self, raw):
         try:
-            result = json.loads(raw)
-            return result
+            return json.loads(raw)
         except json.JSONDecodeError as e:
-            self.report({'ERROR'}, f"JSON decode error: {e}")
+            print(f"Error decoding json content: {raw}")
+            self.report({'ERROR'}, f"JSON decode error: {e} ==== {raw}")
             create_generic_popup(message=f"Script execution failed,,CANCEL,,1|Invalid JSON output,,CANCEL,,1")
-        return None
+        return json.loads("{}")
+
+    def get_logs_json(self, file):
+        try:
+            with open(file, 'r') as file:
+                raw_content = file.read()
+                return self.get_json(raw_content)
+        except FileNotFoundError:
+            print(f"Log file not found: {file}")
+            create_generic_popup(message=f"Log file not found,,CANCEL,,1|{file},,CANCEL,,1")
+        except IOError:
+            print(f"Error reading log file: {file}")
+            create_generic_popup(message=f"Error reading log file,,CANCEL,,1|{file},,CANCEL,,1")
+        return json.loads("{}")
+
 
     def execute_script(self, context):
         script_path = self.get_script_path()
         script_args = self.get_script_args()
-        output = self.run_script(script_path, *script_args)
-        if output is None:
-            return
-        print("Raw output to convert to json =======\n", output)
-        result = self.get_json(output)
-        print("Converted json result:\n", result)
+        self.run_script(script_path, *script_args)
+        log_file = self.get_log_file()
+        result = self.get_logs_json(log_file)
         self.handle_success(result, context)
         if not result:
             print("\nERROR:\nThe raw json output is not pure json, please check that commands don't print to the console by using *>&1 | Out-String in the ps1 file")
