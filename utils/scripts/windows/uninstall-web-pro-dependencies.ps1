@@ -1,78 +1,74 @@
 . "$PSScriptRoot\exit-codes.ps1"
 . "$PSScriptRoot\constants.ps1"
 
+$commandOutput = @()
+$no_choco_installed=$False # assume chocolatey is installed
+
 # Check if Chocolatey is installed
 if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+    $commandOutput += "Chocolatey is not installed." + $NEW_LINE
     $result = @{
-        error = "Chocolatey is not installed."
+        no_choco_installed = $True
+        commandOutput = $commandOutput
     }
     $result | ConvertTo-Json
     exit $SUCCESS
 }
 
+# Uninstall chocolatey packages
 try {
-    # List installed packages
-    $installedPackages = choco list --local-only
-
-    if ($installedPackages) {
-        # Uninstall all packages
-        $installedPackages | ForEach-Object {
-            if ($_ -notmatch "Chocolatey") {
-                $packageName = $_.Split(' ')[0]
-                try {
-                    choco uninstall $packageName --yes *>&1 | Out-String
-                } catch {
-                    $result = @{
-                        error = "Error uninstalling package: $packageName"
-                        exception = $_.Exception.Message
-                        exception_full = $_.ToString()
-                    }
-                    $result | ConvertTo-Json
-                    exit $ERROR_UNINSTALLING_CHOCOLATEY
-                }
-            }
-        }
-    }
-
-    # Uninstall Chocolatey
-    try {
-        choco uninstall chocolatey --yes *>&1 | Out-String
-        $result = @{
-            success = "Chocolatey has been uninstalled successfully."
-        }
-        $result | ConvertTo-Json
-    } catch {
-        $result = @{
-            error = "Error uninstalling Chocolatey."
-            exception = $_.Exception.Message
-            exception_full = $_.ToString()
-        }
-        $result | ConvertTo-Json
-        exit $ERROR_UNINSTALLING_CHOCOLATEY
-    }
-
-    # Clean up environment variables
-    try {
-        [System.Environment]::SetEnvironmentVariable("ChocolateyInstall", $null, [System.EnvironmentVariableTarget]::Machine)
-        [System.Environment]::SetEnvironmentVariable("ChocolateyHome", $null, [System.EnvironmentVariableTarget]::Machine)
-    } catch {
-        $result = @{
-            error = "Error cleaning up environment variables."
-            exception = $_.Exception.Message
-            exception_full = $_.ToString()
-        }
-        $result | ConvertTo-Json
-        exit $ERROR_UNINSTALLING_CHOCOLATEY
-    }
-
-    exit $SUCCESS
-
+    $output = & { choco uninstall all -y *>&1 | Out-String }
+    $commandOutput += $output + $NEW_LINE
 } catch {
     $result = @{
-        error = "An unexpected error occurred."
+        error = "Error uninstalling Chocolatey packages"
+        exception = $_.Exception.Message
+        exception_full = $_.ToString()
+    }
+    $result | ConvertTo-Json
+    exit $ERROR_UNINSTALLING_CHOCOLATEY_PACKAGES
+}
+
+try {
+     $output = & { Remove-Item -Recurse -Force C:\ProgramData\chocolatey *>&1 | Out-String }
+     $commandOutput += $output + $NEW_LINE
+} catch {
+    $result = @{
+        error = "Error removing Chocolatey"
+        exception = $_.Exception.Message
+        exception_full = $_.ToString()
+    }
+    $result | ConvertTo-Json
+    exit $ERROR_UNINSTALLING_CHOCOLATEY_REMOVE_DIR
+}
+
+# Try removing any other folders related to Chocolatey but just output warnings when failed
+try {
+    $output = & { Remove-Item -Recurse -Force C:\ProgramData\ChocolateyHttpCache *>&1 | Out-String }
+    $commandOutput += "Removed directories related to chocolatey." + $NEW_LINE
+} catch {
+    # Do nothing
+}
+
+# Clean up environment variables
+try {
+    [System.Environment]::SetEnvironmentVariable("ChocolateyInstall", $null, [System.EnvironmentVariableTarget]::Machine)
+    [System.Environment]::SetEnvironmentVariable("ChocolateyHome", $null, [System.EnvironmentVariableTarget]::Machine)
+    $commandOutput += "Removed environment variables related to Chocolatey" + $NEW_LINE
+} catch {
+    $result = @{
+        error = "Error cleaning up environment variables."
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
     $result | ConvertTo-Json
     exit $ERROR_UNINSTALLING_CHOCOLATEY
 }
+
+$commandOutput += "Successfully uninstalled Chocolatey!$NEW_LINE"
+$result = @{
+    no_choco_installed = $False
+    commandOutput = $commandOutput
+}
+$result | ConvertTo-Json
+exit $SUCCESS

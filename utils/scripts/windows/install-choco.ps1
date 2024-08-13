@@ -57,9 +57,12 @@ if (Get-Command choco -ErrorAction SilentlyContinue) {
 }
 
 try {
-    $scriptContent = (New-Object System.Net.WebClient).DownloadString($source)
-    $output = & { iex $scriptContent *>&1 | Out-String }
+    #$output = & { iex (Get-Content "install-choco-community.ps1" -Raw) *>&1 | Out-String }
+    $output = & "$PSScriptRoot\install-choco-community.ps1" *>&1 | Out-String
     $commandOutput += $output + $LINE_END
+    #$scriptContent = (New-Object System.Net.WebClient).DownloadString($source)
+    #$output = & { iex $scriptContent *>&1 | Out-String }
+    #$commandOutput += $output + $LINE_END
 } catch {
     $result = @{
         error = "Error downloading/executing installation script!"

@@ -3,6 +3,7 @@ import os
 from blender_web_pro.operators.common.operator_generic_popup import create_generic_popup # type: ignore
 from blender_web_pro.operators.installation.operator_script_base import OperatorScriptBase # type: ignore
 from blender_web_pro.ui.property_groups.property_group_installation_properties import InstallationPropertyGroup # type: ignore
+from blender_web_pro.utils.file_utils import FileUtils # type: ignore
 
 class WEB_OT_OperatorInstallNVM(OperatorScriptBase):
     bl_idname = "blender_web_pro.install_nvm_operator"
@@ -15,7 +16,7 @@ class WEB_OT_OperatorInstallNVM(OperatorScriptBase):
         super().draw(context)
 
     def get_script_path(self):
-        return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-nvm.ps1')
+        return os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/windows', 'install-nvm.ps1')
 
     def handle_success(self, result, context):
         nvm_version = result.get("nvmVersion", "Unknown NVM version")

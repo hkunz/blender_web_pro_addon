@@ -5,6 +5,7 @@ import shutil
 from blender_web_pro.operators.installation.operator_script_base import OperatorScriptBase # type: ignore
 from blender_web_pro.ui.property_groups.property_group_userinterface_properties import UserInterfacePropertyGroup # type: ignore
 from blender_web_pro.utils.package_json import PackageJson # type: ignore
+from blender_web_pro.utils.file_utils import FileUtils # type: ignore
 
 class WEB_OT_OperatorInstallDependency(OperatorScriptBase):
     bl_options = {'INTERNAL'}
@@ -25,7 +26,7 @@ class WEB_OT_OperatorInstallDependency(OperatorScriptBase):
         if os.path.isfile(tgt):
             print("Skip copy template file since it already exists: ", tgt)
             return
-        src = os.path.join(os.getcwd(), f'resources/templates/{file}.template')
+        src = os.path.join(FileUtils.get_addon_root_dir(), f'resources/templates/{file}.template')
         self.report({'INFO'}, f"Generated config file: {tgt}")
         shutil.copy(src, tgt)
 

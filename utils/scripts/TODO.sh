@@ -184,3 +184,12 @@ subprocess.run(["powershell.exe", "-ExecutionPolicy", "Bypass", "-File", script_
 
 
 
+Uninstall Node.js: 
+Control Panel > Programs > Programs and Features > Uninstall Program > Search for Node.js > remove
+Uninstall Choco:
+Remove-Item -Recurse -Force C:\ProgramData\chocolatey
+
+
+choco uninstall all -y
+Remove-Item -Recurse -Force C:\ProgramData\chocolatey
+choco --version # verify it's uninstalled

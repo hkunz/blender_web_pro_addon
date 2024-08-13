@@ -3,6 +3,7 @@ import os
 
 from blender_web_pro.operators.common.operator_generic_popup import create_generic_popup # type: ignore
 from blender_web_pro.operators.installation.operator_install_dependency import WEB_OT_OperatorInstallDependency # type: ignore
+from blender_web_pro.utils.file_utils import FileUtils # type: ignore
 
 class WEB_OT_OperatorInstallThreeJS(WEB_OT_OperatorInstallDependency):
     bl_idname = "blender_web_pro.install_threejs_via_npm_operator"
@@ -13,7 +14,7 @@ class WEB_OT_OperatorInstallThreeJS(WEB_OT_OperatorInstallDependency):
         return self.execute(context)
 
     def get_script_path(self):
-        return os.path.join(os.getcwd(), r'utils/scripts/windows', 'install-threejs.ps1')
+        return os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/windows', 'install-threejs.ps1')
 
     def get_script_args(self):
         props = bpy.context.scene.userinterface_props
