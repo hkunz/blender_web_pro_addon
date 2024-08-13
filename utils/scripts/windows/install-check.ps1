@@ -4,7 +4,7 @@
 
 
 Write-Host ""
-Write-Host "$PSCommandPath" -ForegroundColor Green
+Write-Host "$PSCommandPath" -ForegroundColor Blue
 Write-Host "Checking installation prerequisites ..." -ForegroundColor Yellow
 
 # These constant values -0,1,2 are used in property_group_installation_properties.py
@@ -51,7 +51,7 @@ if ((Get-Command choco -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_CHOC) 
     try {
         if ($TEST_INSTALL_CHOC_EXCEPT) {throw "Test Exception"}
         $version = & choco --version
-        $msg = "$install_name $version is installed!"
+        $msg = "$install_name $version is already installed!"
         $result.choco = $INSTALLED
         $result.choco_version = $version
         $result.commandOutput += $msg + $LINE_END
@@ -79,7 +79,7 @@ if ((Get-Command node -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NODE) {
     try {
         if ($TEST_INSTALL_NODE_EXCEPT) {throw "Test Exception"}
         $version = & node --version
-        $msg = "$install_name $version is installed!"
+        $msg = "$install_name $version is already installed!"
         $nodejs_installed = $True
         $result.node = $INSTALLED
         $result.node_version = $version
@@ -105,7 +105,7 @@ if ((Get-Command npm -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NPM) {
     try {
         if ($TEST_INSTALL_NPM_EXCEPT) {throw "Test Exception"}
         $version = & npm --version
-        $msg = "$install_name $version is installed!"
+        $msg = "$install_name $version is already installed!"
         $result.npm = $INSTALLED
         $result.npm_version = $version
         $result.commandOutput += $msg + $LINE_END
@@ -139,7 +139,7 @@ if ((Get-Command npx -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NPX) {
     try {
         if ($TEST_INSTALL_NPX_EXCEPT) {throw "Test Exception"}
         $version = & npx --version
-        $msg = "$install_name $version is installed!"
+        $msg = "$install_name $version is already installed!"
         $result.npx = $INSTALLED
         $result.npx_version = $version
         $result.commandOutput += $msg + $LINE_END
@@ -173,7 +173,7 @@ if ((Get-Command nvm -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NVM) {
     try {
         if ($TEST_INSTALL_NVM_EXCEPT) {throw "Test Exception"}
         $version = & nvm version
-        $msg = "$install_name $version is installed!"
+        $msg = "$install_name $version is already installed!"
         $result.nvm = $INSTALLED
         $result.nvm_version = $version
         $result.commandOutput += $msg + $LINE_END

@@ -33,7 +33,7 @@ class WEB_OT_OperatorInstallChoco(OperatorScriptBase):
         already_installed = result.get("alreadyInstalled", False)
         choco_path = result.get("chocoPath", "Unknown path")
         source = result.get("source", "Unknown source")
-        msg = f"Chocolatey {version} is already installed!" if already_installed else f"Chocolatey {version} is installed successfully!"
+        msg = f"Chocolatey {version} is already installed!" if already_installed else f"Chocolatey {version} installation complete!"
         props = context.scene.installation_props
         props.installation_status_choco = InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED
         props.installed_choco_v = version

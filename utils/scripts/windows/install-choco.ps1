@@ -3,12 +3,12 @@
 . "$PSScriptRoot\common\utils.ps1"
 
 Write-Host ""
-Write-Host "$PSCommandPath" -ForegroundColor Green
+Write-Host "$PSCommandPath" -ForegroundColor Blue
 Write-Host "Preparing installation for Chocolatey ..." -ForegroundColor Yellow
 
 Init-Log "$PSScriptRoot\..\..\..\logs\install-choco.log"
 
-$TEST_FORCE_INSTALL = 1
+$TEST_FORCE_INSTALL = 0
 
 try {
     Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process -Force"
@@ -80,7 +80,6 @@ try {
     & "$PSScriptRoot\install-choco-community.ps1"
     #$scriptContent = (New-Object System.Net.WebClient).DownloadString($source)
     #$output = & { iex $scriptContent *>&1 | Out-String }
-    #$commandOutput += $output + $LINE_END
 } catch {
     Write-Error "Error occurred while trying to install $PSScriptRoot\install-choco-community.ps1"
     $result = @{
@@ -91,6 +90,8 @@ try {
     Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_DOWNLOADING_CHOCOLATEY
 }
+
+Write-Host "$install_name installed. Testing choco --version command"
 
 try {
     $version = choco --version
@@ -106,37 +107,42 @@ try {
     exit $ERROR_RUNNING_CHOCOLATEY_AFTER_INSTALLATION
 }
 
+Write-Host "$install_name $version installation has been verified. Upgrading using 'choco upgrade chocolatey'"
+
 try {
-    $output = & { choco upgrade chocolatey 2>&1 | Out-String }
-    $commandOutput += $output + $LINE_END
+    $output = & { choco upgrade chocolatey}
     $exit_code = $LASTEXITCODE
     if ($exit_code -eq 0) {
-        $commandOutput += "Successfully installed Chocolatey$LINE_END"
+        Write-Host "$install_name upgrade to $version complete"
     } else {
+        Write-Error "$install_name upgrade error"
         $result = @{
             error = "Error installing Chocolatey!"
             exception = "Installation failed with exit code: $exit_code."
-            exception_full = $commandOutput
+            exception_full = $output
         }
         Log-Progress -message ($result | ConvertTo-Json)
         exit $ERROR_UPGRADING_CHOCOLATEY
     }
-    $result = @{
-        version = $version
-        alreadyInstalled = $false
-        chocoPath = $chocoPath
-        source = $source
-        commandOutput = $commandOutput
-    }
-    Log-Progress -message ($result | ConvertTo-Json)
 } catch {
+    Write-Error $_.ToString()
     $result = @{
-        error = "Error upgrading Chocolatey!"
+        error = "$install_name upgrade error!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
     Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_UPGRADING_CHOCOLATEY
 }
+
+Write-Host "$install_name $version installation successful!" -ForegroundColor Green
+$result = @{
+    version = $version
+    alreadyInstalled = $false
+    chocoPath = $chocoPath
+    source = $source
+    commandOutput = @("$install_name $version installation successful!")
+}
+Log-Progress -message ($result | ConvertTo-Json)
 
 exit $SUCCESS
