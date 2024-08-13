@@ -15,6 +15,9 @@ class WEB_OT_OperatorInstallNodeJS(OperatorScriptBase):
         self.exec_message = "Installing Node.js ... Please wait ..."
         super().draw(context)
 
+    def get_log_file(self):
+        return os.path.join(FileUtils.get_addon_root_dir(), r'logs/install-nodejs-choco.log')
+
     def get_script_path(self):
         return os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/windows', 'install-nodejs-choco.ps1')
 
@@ -36,7 +39,6 @@ class WEB_OT_OperatorInstallNodeJS(OperatorScriptBase):
         props.installation_status_npx = InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED
         props.installed_npx_v = npx_version
 
-        print(msg, node_version, npm_version, npx_version)
         create_generic_popup(message=f"{msg},,CHECKMARK|Node Version: {node_version},,CHECKMARK|NPM Version: {npm_version},,CHECKMARK|NPX Version: {npx_version},,CHECKMARK")
 
     @classmethod

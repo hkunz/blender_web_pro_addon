@@ -26,7 +26,7 @@ class WEB_OT_OperatorInstallCheck(OperatorScriptBase):
         super().draw(context)
 
     def execute_script(self, context):
-        self.set_execution_policy()
+        self.set_execution_policy('Bypass')
         super().execute_script(context)
 
     def set_execution_policy(self, policy='RemoteSigned', scope='CurrentUser'):

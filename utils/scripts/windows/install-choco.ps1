@@ -4,7 +4,7 @@
 
 Write-Host ""
 Write-Host "$PSCommandPath" -ForegroundColor Blue
-Write-Host "Preparing installation for Chocolatey ..." -ForegroundColor Yellow
+Write-Host "Preparing installation for Chocolatey ..." -ForegroundColor White
 
 Init-Log "$PSScriptRoot\..\..\..\logs\install-choco.log"
 
@@ -56,8 +56,7 @@ if ((Get-Command choco -ErrorAction SilentlyContinue) -and !$TEST_FORCE_INSTALL)
     } catch {
         Write-Error $_.ToString()
         $result = @{
-            $msg = "$install_name $version is installed, but an error occurred during execution."
-            error = $msg
+            error = "$install_name $version is installed, but an error occurred during execution."
             exception = $_.Exception.Message
             exception_full = $_.ToString()
         }

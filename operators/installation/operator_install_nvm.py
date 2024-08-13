@@ -15,6 +15,9 @@ class WEB_OT_OperatorInstallNVM(OperatorScriptBase):
         self.exec_message = "Installing Node Version manager ... Please wait ..."
         super().draw(context)
 
+    def get_log_file(self):
+        return os.path.join(FileUtils.get_addon_root_dir(), r'logs/install-nvm.log')
+
     def get_script_path(self):
         return os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/windows', 'install-nvm.ps1')
 
