@@ -21,11 +21,6 @@ class WEB_OT_OperatorInstallThreeJS(WEB_OT_OperatorInstallDependency):
     def get_script_path(self):
         return os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/windows', 'install-threejs.ps1')
 
-    def get_script_args(self):
-        props = bpy.context.scene.userinterface_props
-        output_directory = props.output_directory
-        return ["-DirectoryPath", output_directory, "-AnotherArg", "Value22"]
-
     def handle_success(self, result, context):
         super().handle_success(result, context)
         node_version = result.get("nodeVersion", "Unknown Node.js version")

@@ -16,6 +16,7 @@ try {
     Set-ExecutionPolicy Bypass -Scope Process -Force
 } catch {
     $err = "Error setting execution policy!"
+    Write-Error $_.ToString()
     Write-Error "$err"
     $result = @{
         error = $err
@@ -31,6 +32,7 @@ try {
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
 } catch {
     $err = "Error setting security protocol!"
+    Write-Error $_.ToString()
     Write-Error "$err"
     $result = @{
         error = $err

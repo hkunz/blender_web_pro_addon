@@ -23,6 +23,7 @@ Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process 
 try {
     Set-ExecutionPolicy Bypass -Scope Process -Force
 } catch {
+    Write-Error $_.ToString()
     $result = @{
         error = "Error setting execution policy!"
         exception = $_.Exception.Message

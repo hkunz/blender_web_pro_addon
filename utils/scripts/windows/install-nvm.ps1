@@ -59,9 +59,10 @@ try {
     $node_version = & node --version
     Write-Host "Node.js $node_version is already installed" -ForegroundColor Yellow
 } catch {
-    Write-Error $_.ToString()
+    $msg = "Node.js is required to be installed first!"
+    Write-Error $msg
     $result = @{
-        error = "Node.js is required to be installed first!"
+        error = $msg
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
