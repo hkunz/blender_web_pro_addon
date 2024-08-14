@@ -29,7 +29,7 @@ class WEB_OT_OperatorInstallNodeJS(OperatorScriptBase):
 
         msg = "Node.js is installed successfully"
         if already_installed:
-            msg = "Node.js is already installed"
+            msg = f"Node.js is already installed"
 
         props = context.scene.installation_props
         props.installation_status_nodejs = InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED

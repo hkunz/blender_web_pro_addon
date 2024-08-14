@@ -70,14 +70,15 @@ try {
     $nodeVersion = & node --version
     $npmVersion = & npm --version
     $npxVersion = & npx --version
+    $msg = "$install_name $nodeVersion is already installed"
     $result = @{
         nodeVersion = "$nodeVersion"
         npmVersion = "$npmVersion"
         npxVersion = "$npxVersion"
         alreadyInstalled = $true
-        commandOutput = @("Node.js is already installed!")
+        commandOutput = @($msg)
     }
-    Write-Host "$install_name $nodeVersion is already installed" -ForegroundColor Yellow
+    Write-Host "$msg" -ForegroundColor Yellow
     Log-Progress -message ($result | ConvertTo-Json)
     exit $SUCCESS
 } catch {

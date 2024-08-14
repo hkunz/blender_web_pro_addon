@@ -158,6 +158,6 @@ try {
     exit $ERROR_NVM_INSTALLATION_ERROR
 }
 
-Write-Host "Successfully installed Node Version Manager (NVM)"
+Write-Host "Successfully installed Node Version Manager (NVM)" -ForegroundColor Green
 Log-Progress -message ($result | ConvertTo-Json)
 exit $SUCCESS

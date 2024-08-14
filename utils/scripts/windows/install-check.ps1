@@ -5,7 +5,7 @@
 
 Write-Host ""
 Write-Host "$PSCommandPath" -ForegroundColor Blue
-Write-Host "Checking installation prerequisites ..." -ForegroundColor Yellow
+Write-Host "Checking installation prerequisites ..." -ForegroundColor White
 
 # These constant values -0,1,2 are used in property_group_installation_properties.py
 $NOT_INSTALLED = 0
@@ -54,7 +54,7 @@ if ((Get-Command choco -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_CHOC) 
         $msg = "$install_name $version is already installed!"
         $result.choco = $INSTALLED
         $result.choco_version = $version
-        $result.commandOutput += $msg + $LINE_END
+        $result.commandOutput += $msg
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
         $msg = "$install_name $version is installed but error in execution!"
@@ -64,7 +64,7 @@ if ((Get-Command choco -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_CHOC) 
     }
 } else {
     $msg = "$install_name is not yet installed. You can either install it manually or with a click of a button within the addon."
-    $result.commandOutput += $msg + $LINE_END
+    $result.commandOutput += $msg
     Write-Host "$msg" -ForegroundColor Yellow
 }
 
@@ -83,7 +83,7 @@ if ((Get-Command node -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NODE) {
         $nodejs_installed = $True
         $result.node = $INSTALLED
         $result.node_version = $version
-        $result.commandOutput += $msg + $LINE_END
+        $result.commandOutput += $msg
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
         $msg = "$install_name $version is installed, but an error occurred during execution."
@@ -93,7 +93,7 @@ if ((Get-Command node -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NODE) {
     }
 } else {
     $msg = "$install_name is not yet installed. You can either install it manually or with a click of a button within the addon."
-    $result.commandOutput += $msg + $LINE_END
+    $result.commandOutput += $msg
     Write-Host "$msg" -ForegroundColor Yellow
 }
 
@@ -108,7 +108,7 @@ if ((Get-Command npm -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NPM) {
         $msg = "$install_name $version is already installed!"
         $result.npm = $INSTALLED
         $result.npm_version = $version
-        $result.commandOutput += $msg + $LINE_END
+        $result.commandOutput += $msg
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
         $msg = "$install_name $version is installed, but an error occurred during execution."
@@ -126,7 +126,7 @@ if ((Get-Command npm -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NPM) {
         Write-Error $msg
     } else {
         $msg = "$install_name is not yet installed. NPM becomes available when installing '$node_js_name'. You can either install '$node_js_name' manually or with a click of a button within the addon."
-        $result.commandOutput += $msg + $LINE_END
+        $result.commandOutput += $msg
         Write-Host "$msg" -ForegroundColor Yellow
     }
 }
@@ -142,7 +142,7 @@ if ((Get-Command npx -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NPX) {
         $msg = "$install_name $version is already installed!"
         $result.npx = $INSTALLED
         $result.npx_version = $version
-        $result.commandOutput += $msg + $LINE_END
+        $result.commandOutput += $msg
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
         $msg = "$install_name $version is installed, but an error occurred during execution."
@@ -160,7 +160,7 @@ if ((Get-Command npx -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NPX) {
         Write-Error $msg
     } else {
         $msg = "$install_name is not yet installed. It becomes available when installing '$node_js_name'. You can either install '$node_js_name' manually or with a click of a button within the addon."
-        $result.commandOutput += $msg + $LINE_END
+        $result.commandOutput += $msg
         Write-Host "$msg" -ForegroundColor Yellow
     }
 }
@@ -176,7 +176,7 @@ if ((Get-Command nvm -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NVM) {
         $msg = "$install_name $version is already installed!"
         $result.nvm = $INSTALLED
         $result.nvm_version = $version
-        $result.commandOutput += $msg + $LINE_END
+        $result.commandOutput += $msg
         Write-Host "$msg" -ForegroundColor Yellow
     } catch {
         $msg = "$install_name $version is installed, but an error occurred during execution."
@@ -186,7 +186,7 @@ if ((Get-Command nvm -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NVM) {
     }
 } else {
     $msg = "$install_name is not yet installed. You can either install it manually or with a click of a button within the addon."
-    $result.commandOutput += $msg + $LINE_END
+    $result.commandOutput += $msg
     Write-Host "$msg" -ForegroundColor Yellow
 }
 

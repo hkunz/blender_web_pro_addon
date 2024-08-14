@@ -25,9 +25,9 @@ class WEB_OT_OperatorInstallNVM(OperatorScriptBase):
         nvm_version = result.get("nvmVersion", "Unknown NVM version")
         already_installed = result.get("alreadyInstalled", False)
 
-        msg = "NVM is installed successfully"
+        msg = "Node Version Manager (NVM) is installed successfully"
         if already_installed:
-            msg = "NVM is already installed"
+            msg = "Node Version Manager (NVM) is already installed"
 
         props = context.scene.installation_props
         props.installation_status_nvm = InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED

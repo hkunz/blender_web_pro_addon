@@ -50,10 +50,12 @@ $chocoPath = "Unknown Chocolatey Path"
 Write-Host "Checking for existing $install_name installation ..."
 $output = Get-Command choco -ErrorAction SilentlyContinue
 if ((Get-Command choco -ErrorAction SilentlyContinue) -and !$TEST_FORCE_INSTALL) {
+    $msg = ""
     try {
         $version = choco --version
         $chocoPath = (Get-Command choco).Source
-        Write-Host "$install_name $version is already installed" -ForegroundColor Yellow
+        $msg = "$install_name $version is already installed"
+        Write-Host $msg -ForegroundColor Yellow
     } catch {
         Write-Error $_.ToString()
         $result = @{
@@ -69,7 +71,7 @@ if ((Get-Command choco -ErrorAction SilentlyContinue) -and !$TEST_FORCE_INSTALL)
         alreadyInstalled = $true
         chocoPath = $chocoPath
         source = $source
-        commandOutput = @("$install_name $version is already installed!")
+        commandOutput = @($msg)
     }
     Log-Progress -message ($result | ConvertTo-Json)
     exit $SUCCESS
