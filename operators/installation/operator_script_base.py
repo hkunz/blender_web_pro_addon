@@ -36,7 +36,7 @@ class OperatorScriptBase(OperatorGenericPopup):
             msg = f"Unknown error occured while running subprocess"
             print(msg)
             self.report(msg)
-            create_generic_popup(message=f"{msg},,CANCEL,1")
+            create_generic_popup(message=f"{msg},,CANCEL,,1")
         return False
 
     def get_json(self, raw):
@@ -45,7 +45,7 @@ class OperatorScriptBase(OperatorGenericPopup):
         except json.JSONDecodeError as e:
             print(f"Error decoding json content: {raw}")
             self.report({'ERROR'}, f"JSON decode error: {e} ==== {raw}")
-            create_generic_popup(message=f"Script execution failed,,CANCEL,,1|Invalid JSON output,,CANCEL,,1")
+            create_generic_popup(message=f"Script execution failed,,CANCEL,,1|Invalid JSON output,,TRIA_RIGHT")
         return json.loads("{}")
 
     def get_logs_json(self):
@@ -56,10 +56,10 @@ class OperatorScriptBase(OperatorGenericPopup):
                 return self.get_json(raw_content)
         except FileNotFoundError:
             print(f"Log file not found: {file}")
-            create_generic_popup(message=f"Log file not found,,CANCEL,,1|{file},,CANCEL,,1")
+            create_generic_popup(message=f"Log file not found,,CANCEL,,1|{file},,TRIA_RIGHT")
         except IOError:
             print(f"Error reading log file: {file}")
-            create_generic_popup(message=f"Error reading log file,,CANCEL,,1|{file},,CANCEL,,1")
+            create_generic_popup(message=f"Error reading log file,,CANCEL,,1|{file},,TRIA_RIGHT")
         return json.loads("{}")
 
     def execute_script(self, context):
@@ -68,11 +68,11 @@ class OperatorScriptBase(OperatorGenericPopup):
         success = self.run_script(script_path, *script_args)
         result = self.get_logs_json()
         if not result:
-            print("\nERROR:\nThe raw json output is not pure json, please check that commands don't print to the console by using *>&1 | Out-String in the ps1 file")
+            print("\nERROR:\nThe raw json output is not pure json or empty")
             return
         if success:
             self.handle_success(result, context)
-        cmd_output = result.get("commandOutput", [])
+        cmd_output = result.get("infos", [])
         self.report_command_output(cmd_output)
         UiUtils.update_ui(context)
 
@@ -89,9 +89,9 @@ class OperatorScriptBase(OperatorGenericPopup):
         error = result.get("error", "Unknown error")
         exception = result.get("exception", None)
         exception_full = result.get("exception_full", None)
-        message = f"Script execution failed with code {str(errorCode)},,CANCEL,,1|{error},,CANCEL,,1"
+        message = f"Script execution failed with code {str(errorCode)},,CANCEL,,1|{error},,TRIA_RIGHT"
         if exception:
-            message += f"|{exception},,CANCEL,,1"
+            message += f"|{exception},,TRIA_RIGHT"
         create_generic_popup(message=message)
         msg = exception_full if exception_full else (exception if exception else error)
         msg = "".join(msg).replace(OperatorScriptBase.LINE_END, OperatorScriptBase.NEW_LINE)
@@ -99,7 +99,7 @@ class OperatorScriptBase(OperatorGenericPopup):
 
     def on_unknown_script_exit_error(self, e):
         self.report({'ERROR'}, str(e))
-        create_generic_popup(message=f"Unknown script exit error,,CANCEL,,1|Script exit with error code {str(e.returncode)},,TRIA_RIGHT")
+        create_generic_popup(message=f"Unknown script exit error,,CANCEL|Script exit with error code {str(e.returncode)},,TRIA_RIGHT")
 
     def handle_success(self, _):
         raise NotImplementedError("Subclasses must implement this method")

@@ -18,8 +18,8 @@ $installPath = "$env:USERPROFILE\nvm"
 $installerPath = "$installPath\nvm-setup.exe"
 
 $result = @{
-    commandOutput = @()
-    error = $null
+    infos = @() # list of info outputs displayed in Blender's Info Panel
+    errors = @() # list of error outputs displayed in Blender's Info Panel
 }
 
 <#
@@ -78,7 +78,7 @@ try {
     $nvmVersion = & nvm version
     $result.nvmVersion = $nvmVersion
     $result.alreadyInstalled = $true
-    $result.commandOutput = @("Node Version Manager (NVM) is already installed.")
+    $result.infos = @("Node Version Manager (NVM) $nvmVersion is already installed.")
     Log-Progress -message ($result | ConvertTo-Json)
     exit $SUCCESS
 } catch {
@@ -139,7 +139,7 @@ try {
     #Remove-Item -Path $zipPath -Force
 } catch {
     Write-Error $_.ToString()
-    $result.commandOutput += "Failed to clean up: $_ $LINE_END"
+    $result.errors += "Failed to clean up!"
 }
 
 Write-Host "Testing installation with nvm version"
@@ -152,7 +152,7 @@ try {
     $result = @{
         error = "Error installing Node Version Manager (NVM)!"
         exception = "Installation failed or was interrupted..."
-        exception_full = $result.commandOutput
+        exception_full = $result.infos
     }
     Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_NVM_INSTALLATION_ERROR

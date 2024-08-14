@@ -11,7 +11,7 @@ function Log-Progress {
 function Init-Log {
     param ([string]$LogFile)
     $global:LOG_FILE = $LogFile
-    if (Test-Path $LogFile) {
+    if (Test-Path -Path $LogFile -PathType Leaf) {
         $LogFile = Resolve-Path -Path $LogFile
         Clear-Content -Path $LogFile -Force
         Write-Host "Clear log file: ${LogFile}" -ForegroundColor White
@@ -21,6 +21,7 @@ function Init-Log {
         Write-Host "Created log file: ${LogFile}" -ForegroundColor White
     }
     $output = Set-FilePermissions -Path $LogFile
+    return $LogFile
 }
 
 function Set-FilePermissions {

@@ -7,8 +7,17 @@ param (
 . "$PSScriptRoot\common\constants.ps1"
 . "$PSScriptRoot\common\utils.ps1"
 
+$install_name = "Three.js"
 
+Write-Host ""
+Write-Host "$PSCommandPath" -ForegroundColor Blue
+Write-Host "Preparing installation for $install_name ..." -ForegroundColor White
 
+$log_file = Init-Log "$PSScriptRoot\..\..\..\logs\install-threejs.log"
+Write-Host "Log file ===: $log_file"
+
+# Set Execution Policy
+Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process -Force"
 try {
     Set-ExecutionPolicy Bypass -Scope Process -Force
 } catch {
@@ -17,41 +26,50 @@ try {
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_SETTING_EXECUTION_POLICY
 }
 
+# Check if Node.js is already installed
+Write-Host "Checking for existing Node.js installation ..."
 try {
-    # throw "Simulate Exception Test"
-    $nodeVersion = & node --version
-    $npmVersion = & npm --version
+    $node_version = & node --version
+    Write-Host "Node.js $node_version is already installed" -ForegroundColor Yellow
 } catch {
+    Write-Error $_.ToString()
     $result = @{
-        error = "No Node.js installed. You need to install it first!"
+        error = "Node.js is required to be installed first!"
         exception = $_.Exception.Message
         exception_full = $_.ToString()
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_NODE_JS_INSTALLATION_REQUIRED
 }
 
 # Check if the directory path is provided
+Write-Host "Using directory: $DirectoryPath"
 if (-not $DirectoryPath) {
+    $msg = "No directory path provided!"
+    Write-Error "$msg"
     $result = @{
-        error = "No directory path provided!"
+        error = $msg
+        errors = @($msg)
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_NO_DIRECTORY_PATH_PROVIDED
 }
 
 # Check if the provided path is a valid directory
+Write-Host "Checking if directory is valid path: $DirectoryPath"
 if (-not (Test-Path -Path $DirectoryPath -PathType Container)) {
+    $msg = "The provided path is not a valid directory:"
+    Write-Error "$msg"
     $result = @{
-        error = "The provided path is not a valid directory:"
+        error = $msg
         exception = "$DirectoryPath"
-        exception_full = "The provided path is not a valid directory: $DirectoryPath"
+        exception_full = "${msg}: $DirectoryPath"
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_INVALID_DIRECTORY_PATH
 }
 

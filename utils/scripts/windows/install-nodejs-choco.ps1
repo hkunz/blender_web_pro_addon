@@ -76,7 +76,7 @@ try {
         npmVersion = "$npmVersion"
         npxVersion = "$npxVersion"
         alreadyInstalled = $true
-        commandOutput = @($msg)
+        infos = @($msg)
     }
     Write-Host "$msg" -ForegroundColor Yellow
     Log-Progress -message ($result | ConvertTo-Json)
@@ -121,7 +121,7 @@ try {
         npmVersion = $npmVersion
         npxVersion = $npxVersion
         alreadyInstalled = $false
-        commandOutput = @("$install_name $nodeVersion installation successful!")
+        infos = @("$install_name $nodeVersion installation successful!")
     }
 } catch {
     Write-Error $_.ToString()

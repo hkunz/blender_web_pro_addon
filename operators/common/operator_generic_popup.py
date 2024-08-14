@@ -17,6 +17,7 @@ class OperatorGenericPopup(bpy.types.Operator):
         return True
 
     def invoke(self, context: bpy_types.Context, _: bpy.types.Event) -> set[str]:
+        # return self.execute(context) # use this return statement if you want to skip the prompt and directly proceed to execution
         return context.window_manager.invoke_props_dialog(self, width=self.width) if self.width else context.window_manager.invoke_props_dialog(self)
 
     def draw(self, _: bpy_types.Context) -> None:

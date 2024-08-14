@@ -8,11 +8,13 @@ from blender_web_pro.utils.file_utils import FileUtils # type: ignore
 
 class WEB_OT_OperatorInstallViteDependency(WEB_OT_OperatorInstallDependency):
     bl_idname = "blender_web_pro.install_vite_dependency_via_npm_operator"
-    bl_label = "Install Vite via npm operator"
+    bl_label = "Install Vite via NPM"
     bl_description = "Install Vite as a development dependency in your project"
 
-    def invoke(self, context, _: bpy.types.Event) -> set[str]:
-        return self.execute(context)
+    def draw(self, context) -> None:
+        self.message = "Proceed with Vite Installation into directory?|This may take several minutes.,,INFO|Please wait while installation completes.,,INFO"
+        self.exec_message = "Installing Three.js ... Please wait ..."
+        super().draw(context)
 
     def get_script_path(self):
         return os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/windows', 'install-vite-dependency.ps1')

@@ -11,7 +11,7 @@ class WEB_OT_OperatorInstallNodeJS(OperatorScriptBase):
     bl_description = "Install Node.js which is a JavaScript runtime built on Chrome's V8 JavaScript engine"
 
     def draw(self, context) -> None:
-        self.message = "Proceed with Node.js Installation?|Please wait while installation completes.,,INFO|This may take several minutes.,,INFO"
+        self.message = "Proceed with Node.js Installation?|This may take several minutes.,,INFO|Please wait while installation completes.,,INFO"
         self.exec_message = "Installing Node.js ... Please wait ..."
         super().draw(context)
 

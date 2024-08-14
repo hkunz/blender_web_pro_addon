@@ -7,11 +7,16 @@ from blender_web_pro.utils.file_utils import FileUtils # type: ignore
 
 class WEB_OT_OperatorInstallThreeJS(WEB_OT_OperatorInstallDependency):
     bl_idname = "blender_web_pro.install_threejs_via_npm_operator"
-    bl_label = "Install Three.js via npm operator"
+    bl_label = "Install Three.js via NPM"
     bl_description = "Install Three.js (via npm) which is a JavaScript library that simplifies the creation and rendering of 3D graphics in the web browser using WebGL"
 
-    def invoke(self, context, _: bpy.types.Event) -> set[str]:
-        return self.execute(context)
+    def draw(self, context) -> None:
+        self.message = "Proceed with Three.js Installation into directory?|This may take several minutes.,,INFO|Please wait while installation completes.,,INFO"
+        self.exec_message = "Installing Three.js ... Please wait ..."
+        super().draw(context)
+
+    def get_log_file(self):
+        return os.path.join(FileUtils.get_addon_root_dir(), r'logs/install-threejs.log')
 
     def get_script_path(self):
         return os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/windows', 'install-threejs.ps1')

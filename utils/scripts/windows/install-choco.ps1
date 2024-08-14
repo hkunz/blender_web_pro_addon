@@ -71,7 +71,7 @@ if ((Get-Command choco -ErrorAction SilentlyContinue) -and !$TEST_FORCE_INSTALL)
         alreadyInstalled = $true
         chocoPath = $chocoPath
         source = $source
-        commandOutput = @($msg)
+        infos = @($msg)
     }
     Log-Progress -message ($result | ConvertTo-Json)
     exit $SUCCESS
@@ -143,7 +143,7 @@ $result = @{
     alreadyInstalled = $false
     chocoPath = $chocoPath
     source = $source
-    commandOutput = @("$install_name $version installation successful!")
+    infos = @("$install_name $version installation successful!")
 }
 Log-Progress -message ($result | ConvertTo-Json)
 

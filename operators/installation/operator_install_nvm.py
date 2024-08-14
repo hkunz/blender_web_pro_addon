@@ -7,11 +7,11 @@ from blender_web_pro.utils.file_utils import FileUtils # type: ignore
 
 class WEB_OT_OperatorInstallNVM(OperatorScriptBase):
     bl_idname = "blender_web_pro.install_nvm_operator"
-    bl_label = "Install NVM"
+    bl_label = "Install Node Version Manager (NVM)"
     bl_description = "Install NVM (Node Version Manager) which is a tool for managing multiple versions of Node.js on a single machine, allowing users to easily switch between different versions for different projects"
 
     def draw(self, context) -> None:
-        self.message = "Proceed with Node Version Manager Installation?|Please wait while installation completes.,,INFO|This may take several minutes.,,INFO"
+        self.message = "Proceed with Node Version Manager Installation?|This may take several minutes.,,INFO|Please wait while installation completes.,,INFO"
         self.exec_message = "Installing Node Version manager ... Please wait ..."
         super().draw(context)
 
