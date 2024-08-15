@@ -6,7 +6,7 @@ Write-Host ""
 Write-Host "$PSCommandPath" -ForegroundColor Blue
 Write-Host "Preparing installation for Node Version Manager (NVM) ..." -ForegroundColor White
 
-Init-Log "$PSScriptRoot\..\..\..\logs\install-nvm.log"
+Init-Log "$PSScriptRoot\..\..\..\logs\install-nvm.log" | Out-Null
 
 $TEST_FORCE_INSTALL = 0
 $TEST_SKIP_DOWNLOAD = 0

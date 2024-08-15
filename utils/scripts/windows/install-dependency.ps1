@@ -14,7 +14,7 @@ Write-Host ""
 Write-Host "$PSCommandPath" -ForegroundColor Blue
 Write-Host "Preparing installation for $install_name ..." -ForegroundColor White
 
-Init-Log "$PSScriptRoot\..\..\..\logs\$logfile"
+Init-Log "$PSScriptRoot\..\..\..\logs\$logfile" | Out-Null
 
 # Set Execution Policy
 Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process -Force"

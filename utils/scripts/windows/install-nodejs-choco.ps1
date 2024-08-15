@@ -8,7 +8,7 @@ Write-Host ""
 Write-Host "$PSCommandPath" -ForegroundColor Blue
 Write-Host "Preparing installation for $install_name ..." -ForegroundColor White
 
-Init-Log "$PSScriptRoot\..\..\..\logs\install-nodejs-choco.log"
+Init-Log "$PSScriptRoot\..\..\..\logs\install-nodejs-choco.log" | Out-Null
 
 $TEST_FORCE_INSTALL = 0
 

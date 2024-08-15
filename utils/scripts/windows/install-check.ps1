@@ -41,7 +41,7 @@ $result = @{
     errors = @() # list of error outputs displayed in Blender's Info Panel
 }
 
-Init-Log "$PSScriptRoot\..\..\..\logs\install-check.log"
+Init-Log "$PSScriptRoot\..\..\..\logs\install-check.log" | Out-Null
 
 # Check Chocolatey:
 $install_name = "Chocolatey"

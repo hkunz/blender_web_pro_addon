@@ -16,7 +16,7 @@ function Init-Log {
         Clear-Content -Path $LogFile -Force
         Write-Host "Clear log file: ${LogFile}" -ForegroundColor White
     } else {
-        New-Item -Path $LogFile -ItemType File -Force
+        New-Item -Path $LogFile -ItemType File -Force | Out-Null
         $LogFile = Resolve-Path -Path $LogFile
         Write-Host "Created log file: ${LogFile}" -ForegroundColor White
     }

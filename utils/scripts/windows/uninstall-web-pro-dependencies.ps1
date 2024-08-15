@@ -2,51 +2,104 @@
 . "$PSScriptRoot\common\constants.ps1"
 . "$PSScriptRoot\common\utils.ps1"
 
-$commandOutput = @()
+$install_name = "Chocolatey"
+$version = ""
+$infos = @()
 $no_choco_installed=$False # assume chocolatey is installed
 
-# Check if Chocolatey is installed
-if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-    $commandOutput += "Chocolatey is not installed." + $NEW_LINE
+$CHOCO_UNINSTALLED_TEST = 1
+
+Write-Host ""
+Write-Host "$PSCommandPath" -ForegroundColor Blue
+Write-Host "Preparing for uninstallation of $install_name and related packages ..." -ForegroundColor White
+
+Init-Log "$PSScriptRoot\..\..\..\logs\uninstall-web-pro-dependencies.log" | Out-Null
+
+$TEST_FORCE_INSTALL = 0
+
+# Set Execution Policy
+Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process -Force"
+try {
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+} catch {
+    $err = "Error setting execution policy!"
+    Write-Error $_.ToString()
+    Write-Error "$err"
+    $result = @{
+        error = $err
+        exception = $_.Exception.Message
+        exception_full = $_.ToString()
+    }
+    Log-Progress -message ($result | ConvertTo-Json)
+    exit $ERROR_SETTING_EXECUTION_POLICY
+}
+
+try {
+    Write-Host "Setting security protocol -bor 3072"
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+} catch {
+    $err = "Error setting security protocol!"
+    Write-Error $_.ToString()
+    Write-Error "$err"
+    $result = @{
+        error = $err
+        exception = $_.Exception.Message
+        exception_full = $_.ToString()
+    }
+    Log-Progress -message ($result | ConvertTo-Json)
+    exit $ERROR_SETTING_SECURITY_PROTOCOL
+}
+
+# Check if Chocolatey is already installed
+Write-Host "Checking for existing $install_name installation ..."
+if (-not (Get-Command choco -ErrorAction SilentlyContinue) -or $CHOCO_UNINSTALLED_TEST) {
+    $infos += "Chocolatey is not installed."
     $result = @{
         no_choco_installed = $True
-        commandOutput = $commandOutput
+        infos = $infos
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $SUCCESS
 }
 
 # Uninstall chocolatey packages
+Write-Host "Uninstalling $install_name packages ..."
 try {
-    $output = & { choco uninstall all -y *>&1 | Out-String }
-    $commandOutput += $output + $NEW_LINE
+    $version = choco --version
+    $output = & { choco uninstall all -y }
 } catch {
+    $err = "Error uninstalling Chocolatey packages"
+    Write-Error $_.ToString()
     $result = @{
-        error = "Error uninstalling Chocolatey packages"
+        error = $err
         exception = $_.Exception.Message
         exception_full = $_.ToString()
+        errors = @($err)
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_UNINSTALLING_CHOCOLATEY_PACKAGES
 }
 
+$choco_path = "C:\ProgramData\chocolatey"
 try {
-     $output = & { Remove-Item -Recurse -Force C:\ProgramData\chocolatey *>&1 | Out-String }
-     $commandOutput += $output + $NEW_LINE
+     $output = & { Remove-Item -Recurse -Force $choco_path }
 } catch {
+    Write-Error $_.ToString()
+    $err = "Error removing Chocolatey $version"
     $result = @{
-        error = "Error removing Chocolatey"
+        error = $err
         exception = $_.Exception.Message
         exception_full = $_.ToString()
+        $errors = @("${err}: ${choco_path}")
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_UNINSTALLING_CHOCOLATEY_REMOVE_DIR
 }
 
 # Try removing any other folders related to Chocolatey but just output warnings when failed
 try {
-    $output = & { Remove-Item -Recurse -Force C:\ProgramData\ChocolateyHttpCache *>&1 | Out-String }
-    $commandOutput += "Removed directories related to chocolatey." + $NEW_LINE
+    $output = & { Remove-Item -Recurse -Force C:\ProgramData\ChocolateyHttpCache }
+    $infos += "Removed directories related to chocolatey $version."
 } catch {
     # Do nothing
 }
@@ -55,21 +108,24 @@ try {
 try {
     [System.Environment]::SetEnvironmentVariable("ChocolateyInstall", $null, [System.EnvironmentVariableTarget]::Machine)
     [System.Environment]::SetEnvironmentVariable("ChocolateyHome", $null, [System.EnvironmentVariableTarget]::Machine)
-    $commandOutput += "Removed environment variables related to Chocolatey" + $NEW_LINE
+    $infos += "Removed environment variables related to Chocolatey $version"
 } catch {
+    Write-Error $_.ToString()
+    $err = "Error cleaning $install_name $version environment variables"
     $result = @{
-        error = "Error cleaning up environment variables."
+        error = $err
         exception = $_.Exception.Message
         exception_full = $_.ToString()
+        $errors = @($err)
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_UNINSTALLING_CHOCOLATEY
 }
 
-$commandOutput += "Successfully uninstalled Chocolatey!$NEW_LINE"
+$infos += "Successfully uninstalled $install_name $version!"
 $result = @{
     no_choco_installed = $False
-    commandOutput = $commandOutput
+    infos = $infos
 }
-$result | ConvertTo-Json
+Log-Progress -message ($result | ConvertTo-Json)
 exit $SUCCESS

@@ -6,7 +6,7 @@ Write-Host ""
 Write-Host "$PSCommandPath" -ForegroundColor Blue
 Write-Host "Preparing installation for Chocolatey ..." -ForegroundColor White
 
-Init-Log "$PSScriptRoot\..\..\..\logs\install-choco.log"
+Init-Log "$PSScriptRoot\..\..\..\logs\install-choco.log" | Out-Null
 
 $TEST_FORCE_INSTALL = 0
 
@@ -50,7 +50,6 @@ $chocoPath = "Unknown Chocolatey Path"
 
 # Check if Chocolatey is already installed
 Write-Host "Checking for existing $install_name installation ..."
-$output = Get-Command choco -ErrorAction SilentlyContinue
 if ((Get-Command choco -ErrorAction SilentlyContinue) -and !$TEST_FORCE_INSTALL) {
     $msg = ""
     try {

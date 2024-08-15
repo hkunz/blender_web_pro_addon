@@ -34,7 +34,8 @@ class WEB_OT_OperatorInstallDependency(OperatorScriptBase):
         v = self.copy_template_file(directory, "vite.config.mjs")
         i = self.copy_template_file(directory, "index.html")
         m = self.copy_template_file(directory, "main.js")
-        if not (os.path.exists(v) and os.path.exists(i) and os.path.exists(m) and os.path.exists(p)):
+        j = self.copy_template_file(directory, "package.json")
+        if not (os.path.exists(j) and os.path.exists(v) and os.path.exists(i) and os.path.exists(m) and os.path.exists(p)):
             self.report({'ERROR'}, f"One of the config files could not be generated: \n\t{p}\n\t{v}\n\t{i}\n\t{m}\n\t")
             return
         super().execute_script(context)

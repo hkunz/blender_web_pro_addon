@@ -18,6 +18,9 @@ class WEB_OT_OperatorUninstallWebProDependencies(OperatorScriptBase):
         self.exec_message = "Uninstalling Chocolatey, Node.js, NVM ... Please wait ..."
         super().draw(context)
 
+    def get_log_file(self):
+        return os.path.join(FileUtils.get_addon_root_dir(), r'logs/uninstall-web-pro-dependencies.log')
+
     def get_script_path(self):
         return os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/windows', 'uninstall-web-pro-dependencies.ps1')
 

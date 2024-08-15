@@ -31,8 +31,6 @@ class WEB_OT_OperatorInstallThreeJS(WEB_OT_OperatorInstallDependency):
         node_version = result.get("nodeVersion", "Unknown Node.js version")
         npm_version = result.get("npmVersion", "Unknown npm version")
         directory = result.get("directoryPath", "Unknown directory path")
-        command_output = result.get("directoryPath", None)
         msg = "Successfully installed Three.JS into directory"
-        print(msg, npm_version, command_output)
         self.report({'INFO'}, f"{msg} {directory} using Node.js {node_version} and npm {npm_version}.")
         create_generic_popup(message=f"{msg},,CHECKMARK|{directory},,CHECKMARK|node version: {node_version},,CHECKMARK|npm version: {npm_version},,CHECKMARK")

@@ -31,7 +31,7 @@ class PackageJson:
     def load_data(self, file_path, force_reload=False):
         """Load JSON data from the file and cache it."""
         if not force_reload and file_path in self.data_cache:
-            print("Using package.json cache since it's already loaded for: ", file_path)
+            # print("Using package.json cache since it's already loaded for: ", file_path)
             self.data = self.data_cache[file_path]
             return
 
