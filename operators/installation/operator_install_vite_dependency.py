@@ -13,8 +13,16 @@ class WEB_OT_OperatorInstallViteDependency(WEB_OT_OperatorInstallDependency):
 
     def draw(self, context) -> None:
         self.message = "Proceed with Vite Installation into directory?|This may take several minutes.,,INFO|Please wait while installation completes.,,INFO"
-        self.exec_message = "Installing Three.js ... Please wait ..."
+        self.exec_message = "Installing Vite dependency ... Please wait ..."
         super().draw(context)
+
+    def get_log_file(self):
+        return os.path.join(FileUtils.get_addon_root_dir(), r'logs/install-vite-dependency.log')
+
+    def get_script_args(self):
+        props = bpy.context.scene.userinterface_props
+        output_directory = props.output_directory.strip()
+        return ["-DirectoryPath", output_directory, "-install_name", "Vite dependency", "-log_file", "install-vite-dependency.log", "-command", "& { npm install --save-dev vite }"]
 
     def get_script_path(self):
         return os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/windows', 'install-vite-dependency.ps1')

@@ -68,8 +68,7 @@ class OperatorScriptBase(OperatorGenericPopup):
     def execute_script(self, context):
         script_path = self.get_script_path()
         script_args = self.get_script_args()
-        success = self.run_script(context, script_path, *script_args)
-        return success
+        self.run_script(context, script_path, *script_args)
 
     def report_command_output(self, output_list):
         for output in output_list:

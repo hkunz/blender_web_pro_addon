@@ -1,18 +1,20 @@
 param (
-    [string]$DirectoryPath
+    [string]$DirectoryPath,
+    [string]$install_name, # e.g., "Three.js" or "Vite dependency"
+    [string]$log_file,     # e.g., "install-threejs.log" or "install-vite-dependency.log"
+    [string]$command       # e.g., "& { npm install --save three }" or "& { npm install --save-dev vite }"
 )
+
 
 . "$PSScriptRoot\common\exit-codes.ps1"
 . "$PSScriptRoot\common\constants.ps1"
 . "$PSScriptRoot\common\utils.ps1"
 
-$install_name = "Vite dependency"
-
 Write-Host ""
 Write-Host "$PSCommandPath" -ForegroundColor Blue
 Write-Host "Preparing installation for $install_name ..." -ForegroundColor White
 
-Init-Log "$PSScriptRoot\..\..\..\logs\install-vite-dependency.log"
+Init-Log "$PSScriptRoot\..\..\..\logs\$log_file"
 
 # Set Execution Policy
 Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process -Force"
@@ -91,10 +93,8 @@ catch {
 
 Write-Host "Installing $install_name into directory: $DirectoryPath"
 try {
-    # throw "Simulate Exception Test"
-    # npm install --save-dev vite | Tee-Object -Variable infos | Out-Null
     $infos = @()
-    $output = & { npm install --save-dev vite }
+    Invoke-Expression $command
     $exit_code = $LASTEXITCODE
     $nodeVersion = & node --version
     $infos += "Using node.js version $nodeVersion"
@@ -111,7 +111,7 @@ try {
             errors = $errors
         }
         Log-Progress -message ($result | ConvertTo-Json)
-        exit $ERROR_INSTALLING_VITE_DEPENDENCY
+        exit $ERROR_INSTALLING_DEPENDENCY_IN_DIRECTORY
     }
     $result = @{
         nodeVersion = $nodeVersion
@@ -130,7 +130,7 @@ try {
         exception_full = $_.ToString() + $LINE_END + "$install_name failed to install into directory $DirectoryPath $LINE_END"
     }
     Log-Progress -message ($result | ConvertTo-Json)
-    exit $ERROR_INSTALLING_VITE_DEPENDENCY
+    exit $ERROR_INSTALLING_DEPENDENCY_IN_DIRECTORY
 }
 
 Write-Host "$install_name installation successful!" -ForegroundColor Green

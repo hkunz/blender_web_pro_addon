@@ -1,6 +1,5 @@
 param (
-    [string]$DirectoryPath,
-    [string]$AnotherArg
+    [string]$DirectoryPath
 )
 
 . "$PSScriptRoot\common\exit-codes.ps1"
@@ -74,6 +73,7 @@ if (-not $DirectoryPath -or -not (Test-Path -Path $DirectoryPath -PathType Conta
     exit $ERROR_INVALID_DIRECTORY_PATH
 }
 
+Write-Host "Entering directory: $DirectoryPath"
 # Change to the desired directory
 try {
     Set-Location -Path $DirectoryPath
@@ -89,7 +89,7 @@ catch {
     exit $ERROR_ACCESSING_DIRECTORY
 }
 
-
+Write-Host "Installing $install_name into directory: $DirectoryPath"
 try {
     # throw "Simulate Exception Test"
     # npm install --save three | Tee-Object -Variable infos | Out-Null
@@ -102,12 +102,12 @@ try {
     $npmVersion = & npm --version
     $infos += "Using npm version $npmVersion"
     if ($exit_code -eq 0) {
-        $infos += "Installed Three.js into directory $DirectoryPath"
-        $infos += "Successfully installed Three.js!"
+        $infos += "Installed $install_name into directory $DirectoryPath"
+        $infos += "Successfully installed $install_name!"
     } else {
-        $errors = @("Three.js failed to install into directory $DirectoryPath using NPM $npmVersion")
+        $errors = @("$install_name failed to install into directory $DirectoryPath using NPM $npmVersion")
         $result = @{
-            error = "Error installing Three.js into directory!"
+            error = "Error installing $install_name into directory!"
             exception = "Installation failed with exit code: $exit_code."
             errors = $errors
         }
@@ -121,15 +121,18 @@ try {
         directoryPath = $DirectoryPath
         infos = $infos
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
 } catch {
+    Write-Error $_.ToString()
+    $errors = @("$install_name failed to install into directory $DirectoryPath using NPM $npmVersion")
     $result = @{
-        error = "Error installing Three.js into!"
+        error = "Error installing $install_name into directory!"
         exception = $_.Exception.Message
-        exception_full = $_.ToString() + $LINE_END + "Three.js failed to install into directory $DirectoryPath $LINE_END"
+        exception_full = $_.ToString() + $LINE_END + "$install_name failed to install into directory $DirectoryPath $LINE_END"
     }
-    $result | ConvertTo-Json
+    Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_INSTALLING_THREE_JS
 }
 
+Write-Host "$install_name installation successful!" -ForegroundColor Green
 exit $SUCCESS

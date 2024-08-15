@@ -26,17 +26,11 @@ class WEB_OT_OperatorInstallDependency(OperatorScriptBase):
             return False
         return True
 
-    def get_script_args(self):
-        props = bpy.context.scene.userinterface_props
-        output_directory = props.output_directory.strip()
-        return ["-DirectoryPath", output_directory]
-
     def execute_script(self, context):
         props: UserInterfacePropertyGroup = context.scene.userinterface_props
         directory = props.output_directory.strip()
         p = os.path.join(directory, "public")
-        if not os.path.exists(p):
-            os.makedirs(p)
+        os.makedirs(p, exist_ok=True)
         v = self.copy_template_file(directory, "vite.config.mjs")
         i = self.copy_template_file(directory, "index.html")
         m = self.copy_template_file(directory, "main.js")
