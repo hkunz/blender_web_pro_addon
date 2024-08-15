@@ -109,7 +109,7 @@ class OperatorScriptBase(OperatorGenericPopup):
 
     def on_script_exit_unknown(self, e):
         self.report({'ERROR'}, str(e))
-        create_generic_popup(message=f"Unknown script exit error,,CANCEL|Script exit with error code {str(e.returncode)},,TRIA_RIGHT")
+        create_generic_popup(message=f"Unknown script exit error,,CANCEL,,1|Script exit with error code {str(e.returncode)},,TRIA_RIGHT")
 
     def handle_success(self, _):
         raise NotImplementedError("Subclasses must implement this method")
