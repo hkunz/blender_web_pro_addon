@@ -26,9 +26,11 @@ class OperatorScriptBase(OperatorGenericPopup):
         try:
             command = ["powershell", "-File", script_path] + list(args)
             subprocess_result = subprocess.run(command, capture_output=False, text=True, check=True)
+            print(f"Script {script_path} has completed normally with exit code {subprocess_result.returncode}")
             self.on_script_exit_success(context)
             return True
         except subprocess.CalledProcessError as e:
+            print(f"Script {script_path} exited prematurely with exit code {e.returncode}")
             if e.returncode >= 10:
                 self.on_script_exit_error(e.stdout, e.returncode)
             else:
@@ -95,7 +97,7 @@ class OperatorScriptBase(OperatorGenericPopup):
         errors = result.get("errors")
         exception = result.get("exception", None)
         exception_full = result.get("exception_full", None)
-        message = f"Script execution failed with code {str(errorCode)},,CANCEL,,1|{error},,TRIA_RIGHT"
+        message = f"{error},,CANCEL,,1|Script execution failed with exit code {str(errorCode)},,TRIA_RIGHT"
         if exception:
             message += f"|{exception},,TRIA_RIGHT"
         create_generic_popup(message=message)

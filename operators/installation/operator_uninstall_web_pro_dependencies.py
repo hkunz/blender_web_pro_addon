@@ -9,7 +9,7 @@ from blender_web_pro.utils.file_utils import FileUtils # type: ignore
 
 class WEB_OT_OperatorUninstallWebProDependencies(OperatorScriptBase):
     bl_idname = "blender_web_pro.uninstall_dependencies"
-    bl_label = "Uninstall Blender Web Pro Dependencies"
+    bl_label = "Uninstall Web Pro Dependencies"
     bl_description = "Uninstall all dependencies related to Blender Web Pro, including Chocolatey, Node.js, NVM, and more."
     bl_options = {'REGISTER'}
 
@@ -33,6 +33,6 @@ class WEB_OT_OperatorUninstallWebProDependencies(OperatorScriptBase):
         props.installed_choco_v = ""
         props.installed_nodejs_v = ""
         props.installed_npm_v = ""
-        print("Unintsalled Chocolate, Node.js, Node Version Manager (NVM) successfully")
+        print("Uninstalled Chocolatey, Node.js, Node Version Manager (NVM) successfully")
         message = "Chocolatey is not installed|No directory: 'C:\ProgramData\chocolatey' found" if no_choco_installed else f"Uninstalled the following Web Pro Dependencies:|Chocolatey,,CHECKMARK|Node.js,,CHECKMARK|Node Version Manager (NVM),,CHECKMARK"
         create_generic_popup(message=message)
