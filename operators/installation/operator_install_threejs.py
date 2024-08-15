@@ -21,7 +21,7 @@ class WEB_OT_OperatorInstallThreeJS(WEB_OT_OperatorInstallDependency):
     def get_script_args(self):
         props = bpy.context.scene.userinterface_props
         output_directory = props.output_directory.strip()
-        return ["-DirectoryPath", output_directory, "-install_name", "Three.js", "-log_file", "install-threejs.log", "-command", "& { npm install --save three }"]
+        return ["-DirectoryPath", output_directory, "-install_name", "Three.js", "-logfile", "install-threejs.log", "-command", "& { npm install --save three }"]
 
     def get_script_path(self):
         return os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/windows', 'install-dependency.ps1')

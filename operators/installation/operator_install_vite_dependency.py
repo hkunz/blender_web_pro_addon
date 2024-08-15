@@ -22,10 +22,10 @@ class WEB_OT_OperatorInstallViteDependency(WEB_OT_OperatorInstallDependency):
     def get_script_args(self):
         props = bpy.context.scene.userinterface_props
         output_directory = props.output_directory.strip()
-        return ["-DirectoryPath", output_directory, "-install_name", "Vite dependency", "-log_file", "install-vite-dependency.log", "-command", "& { npm install --save-dev vite }"]
+        return ["-DirectoryPath", output_directory, "-install_name", "Vite dependency", "-logfile", "install-vite-dependency.log", "-command", "& { npm install --save-dev vite }"]
 
     def get_script_path(self):
-        return os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/windows', 'install-vite-dependency.ps1')
+        return os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/windows', 'install-dependency.ps1')
 
     def handle_success(self, result, context):
         super().handle_success(result, context)

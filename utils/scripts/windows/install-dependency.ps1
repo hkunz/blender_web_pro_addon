@@ -1,7 +1,7 @@
 param (
     [string]$DirectoryPath,
     [string]$install_name, # e.g., "Three.js" or "Vite dependency"
-    [string]$log_file,     # e.g., "install-threejs.log" or "install-vite-dependency.log"
+    [string]$logfile,     # e.g., "install-threejs.log" or "install-vite-dependency.log"
     [string]$command       # e.g., "& { npm install --save three }" or "& { npm install --save-dev vite }"
 )
 
@@ -14,7 +14,7 @@ Write-Host ""
 Write-Host "$PSCommandPath" -ForegroundColor Blue
 Write-Host "Preparing installation for $install_name ..." -ForegroundColor White
 
-Init-Log "$PSScriptRoot\..\..\..\logs\$log_file"
+Init-Log "$PSScriptRoot\..\..\..\logs\$logfile"
 
 # Set Execution Policy
 Write-Host "Setting execution policy: Set-ExecutionPolicy Bypass -Scope Process -Force"
