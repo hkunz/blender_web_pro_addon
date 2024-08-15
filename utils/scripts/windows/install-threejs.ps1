@@ -106,7 +106,6 @@ try {
         $infos += "Successfully installed Three.js!"
     } else {
         $errors = @("Three.js failed to install into directory $DirectoryPath using NPM $npmVersion")
-        $errors += "$output"
         $result = @{
             error = "Error installing Three.js into directory!"
             exception = "Installation failed with exit code: $exit_code."

@@ -71,13 +71,13 @@ try {
     $nodeVersion = & node --version
     $npmVersion = & npm --version
     $npxVersion = & npx --version
-    $msg = "$install_name $nodeVersion is already installed"
+    $infos = @("$install_name $nodeVersion is already installed", "Node.js $nodeVersion came with NPM $npmVersion and NPX $npxVersion which are ready to use")
     $result = @{
         nodeVersion = "$nodeVersion"
         npmVersion = "$npmVersion"
         npxVersion = "$npxVersion"
         alreadyInstalled = $true
-        infos = @($msg)
+        infos = $infos
     }
     Write-Host "$msg" -ForegroundColor Yellow
     Log-Progress -message ($result | ConvertTo-Json)

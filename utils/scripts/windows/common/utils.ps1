@@ -45,3 +45,19 @@ function Set-FilePermissions {
     # Apply updated ACL
     Set-Acl -Path $Path -AclObject $acl
 }
+
+<#
+function Get-ErrorOutputString {
+    param (
+        [Parameter(Mandatory=$true)]
+        [Object[]]$output
+    )
+    $str_output = ""
+    foreach ($item in $output) {
+        if ($item.writeErrorStream -eq $true) {
+            $str_output += $item.value.ToString() + "`n"
+        }
+    }
+    return $str_output
+}
+#>

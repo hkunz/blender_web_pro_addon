@@ -22,19 +22,19 @@ class OperatorScriptBase(OperatorGenericPopup):
     def get_script_args(self):
         return []  # Override in subclasses to provide arguments
 
-    def run_script(self, script_path, *args):
+    def run_script(self, context, script_path, *args):
         try:
             command = ["powershell", "-File", script_path] + list(args)
-            result = subprocess.run(command, capture_output=False, text=True, check=True)
+            subprocess_result = subprocess.run(command, capture_output=False, text=True, check=True)
+            self.on_script_exit_success(context)
             return True
         except subprocess.CalledProcessError as e:
             if e.returncode >= 10:
                 self.on_script_exit_error(e.stdout, e.returncode)
             else:
-                self.on_unknown_script_exit_error(e)
+                self.on_script_exit_unknown(e)
         except Exception as e:
             msg = f"Unknown error occured while running subprocess"
-            print(msg)
             self.report(msg)
             create_generic_popup(message=f"{msg},,CANCEL,,1")
         return False
@@ -50,31 +50,26 @@ class OperatorScriptBase(OperatorGenericPopup):
 
     def get_logs_json(self):
         file = self.get_log_file()
+        msg = None
         try:
-            with open(file, 'r') as file:
-                raw_content = file.read()
-                return self.get_json(raw_content)
+            with open(file, 'r') as f:
+                content = f.read()
+                if content:
+                    return self.get_json(content)
+            msg = f"Log file is empty:"
         except FileNotFoundError:
-            print(f"Log file not found: {file}")
-            create_generic_popup(message=f"Log file not found,,CANCEL,,1|{file},,TRIA_RIGHT")
+            msg = f"Log file not found:"
         except IOError:
-            print(f"Error reading log file: {file}")
-            create_generic_popup(message=f"Error reading log file,,CANCEL,,1|{file},,TRIA_RIGHT")
-        return json.loads("{}")
+            msg = f"Error reading log file:"
+        create_generic_popup(message=f"{msg},,CANCEL,,1|{file},,TRIA_RIGHT")
+        self.report({'ERROR'}, f"{msg} {file}")
+        return None
 
     def execute_script(self, context):
         script_path = self.get_script_path()
         script_args = self.get_script_args()
-        success = self.run_script(script_path, *script_args)
-        result = self.get_logs_json()
-        if not result:
-            print("\nERROR:\nThe raw json output is not pure json or empty")
-            return
-        if success:
-            self.handle_success(result, context)
-        cmd_output = result.get("infos", [])
-        self.report_command_output(cmd_output)
-        UiUtils.update_ui(context)
+        success = self.run_script(context, script_path, *script_args)
+        return success
 
     def report_command_output(self, output_list):
         for output in output_list:
@@ -84,9 +79,21 @@ class OperatorScriptBase(OperatorGenericPopup):
                 if line.strip():  # Optional: Skip empty lines
                     self.report({'INFO'}, line)
 
+    def on_script_exit_success(self, context):
+        result = self.get_logs_json()
+        if not result:
+            return False
+        self.handle_success(result, context)
+        cmd_output = result.get("infos", [])
+        self.report_command_output(cmd_output)
+        UiUtils.update_ui(context)
+
     def on_script_exit_error(self, stdout, errorCode):
         result = self.get_logs_json()
+        if not result:
+            return False
         error = result.get("error", "Unknown error")
+        errors = result.get("errors")
         exception = result.get("exception", None)
         exception_full = result.get("exception_full", None)
         message = f"Script execution failed with code {str(errorCode)},,CANCEL,,1|{error},,TRIA_RIGHT"
@@ -95,9 +102,13 @@ class OperatorScriptBase(OperatorGenericPopup):
         create_generic_popup(message=message)
         msg = exception_full if exception_full else (exception if exception else error)
         msg = "".join(msg).replace(OperatorScriptBase.LINE_END, OperatorScriptBase.NEW_LINE)
-        self.report({'ERROR'}, f"{msg}")
+        if not errors:
+            self.report({'ERROR'}, f"{msg}")
+            return
+        for err in errors:
+            self.report({'ERROR'}, f"{err}")
 
-    def on_unknown_script_exit_error(self, e):
+    def on_script_exit_unknown(self, e):
         self.report({'ERROR'}, str(e))
         create_generic_popup(message=f"Unknown script exit error,,CANCEL|Script exit with error code {str(e.returncode)},,TRIA_RIGHT")
 
