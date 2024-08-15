@@ -36,11 +36,12 @@ function Set-FilePermissions {
     $acl.Access | ForEach-Object { $acl.RemoveAccessRule($_) }
 
     # Define and add new access rules
-    $writeRule = New-Object System.Security.AccessControl.FileSystemAccessRule($owner, "Read,Write", "Allow")
-    $readRule = New-Object System.Security.AccessControl.FileSystemAccessRule("Everyone", "Read", "Allow")
+    #$writeRule = New-Object System.Security.AccessControl.FileSystemAccessRule($owner, "Read,Write", "Allow")
+    $writeRule = New-Object System.Security.AccessControl.FileSystemAccessRule("Everyone", "Read,Write", "Allow") # use "Everyone" instead of $owner, which doesn't allow me to delete from Ubuntu app. permission denied.
+    $deleteRule = New-Object System.Security.AccessControl.FileSystemAccessRule("Everyone", "Delete", "Allow")
 
     $acl.AddAccessRule($writeRule)
-    $acl.AddAccessRule($readRule)
+    $acl.AddAccessRule($deleteRule)
 
     # Apply updated ACL
     Set-Acl -Path $Path -AclObject $acl
