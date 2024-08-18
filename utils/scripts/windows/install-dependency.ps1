@@ -91,9 +91,38 @@ catch {
     exit $ERROR_ACCESSING_DIRECTORY
 }
 
+$infos = @()
+#Preparing to initialize your Node.js project by creating a default package.json file.
+#This file will include basic information about your project and is essential for managing your project's dependencies and scripts.
+Write-Host "Initializing project directory: $DirectoryPath"
+
+try {
+    $package_json = Join-Path -Path $DirectoryPath -ChildPath "package.json"
+    if (-not Test-Path $package_json) {
+        npm init -y
+        $info += "The package.json file has been successfully created with default settings."
+        Write-Host $info
+        Write-Host "You can now start adding dependencies and configuring scripts for your project."
+        $infos += $info
+    } else {
+        Write-Host "The package.json file was found: $package_json"
+    }
+} catch {
+    Write-Error $_.ToString()
+    $err = "Error initializing project directory"
+    $errors = @("$err $DirectoryPath using NPM $npmVersion")
+    $result = @{
+        error = "${err}!"
+        exception = $_.Exception.Message
+        exception_full = $_.ToString()
+        errors = $errors
+    }
+    Log-Progress -message ($result | ConvertTo-Json)
+    exit $ERROR_INITIALIZING_NODEJS_PROJECT_DIRECTORY
+}
+
 Write-Host "Installing $install_name into directory: $DirectoryPath"
 try {
-    $infos = @()
     Invoke-Expression $command
     $exit_code = $LASTEXITCODE
     $nodeVersion = & node --version
@@ -101,8 +130,7 @@ try {
     $npmVersion = & npm --version
     $infos += "Using npm version $npmVersion"
     if ($exit_code -eq 0) {
-        $infos += "Installed $install_name into directory $DirectoryPath"
-        $infos += "Successfully installed $install_name!"
+        $infos += "Successfully installed $install_name into directory $DirectoryPath"
     } else {
         $errors = @("$install_name failed to install into directory $DirectoryPath using NPM $npmVersion")
         $result = @{
@@ -127,7 +155,8 @@ try {
     $result = @{
         error = "Error installing $install_name into directory!"
         exception = $_.Exception.Message
-        exception_full = $_.ToString() + $LINE_END + "$install_name failed to install into directory $DirectoryPath $LINE_END"
+        exception_full = $_.ToString()
+        errors = $errors
     }
     Log-Progress -message ($result | ConvertTo-Json)
     exit $ERROR_INSTALLING_DEPENDENCY_IN_DIRECTORY
