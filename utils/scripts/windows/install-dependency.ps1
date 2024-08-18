@@ -98,7 +98,7 @@ Write-Host "Initializing project directory: $DirectoryPath"
 
 try {
     $package_json = Join-Path -Path $DirectoryPath -ChildPath "package.json"
-    if (-not Test-Path $package_json) {
+    if (-not (Test-Path $package_json)) {
         npm init -y
         $info += "The package.json file has been successfully created with default settings."
         Write-Host $info

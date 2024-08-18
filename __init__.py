@@ -50,6 +50,7 @@ from blender_web_pro.utils.icons_manager import IconsManager # type: ignore
 from blender_web_pro.translation.translations import register as register_translations, unregister as unregister_translations # type: ignore
 from blender_web_pro.ui.sidebar_menu import register as register_sidebar_menu, unregister as unregister_sidebar_menu # type: ignore
 from blender_web_pro.operators.common.operator_generic_popup import register as register_generic_popup, unregister as unregister_generic_popup # type: ignore
+from blender_web_pro.operators.cache.operator_clear_package_json_cache import BWP_OT_OperatorClearPackageJsonCache # type: ignore
 
 def add_executable_permission(exe: Union[str, Path]) -> Path: #https://blender.stackexchange.com/questions/310144/mac-executable-binary-within-addon-zip-loses-execute-permission-when-addon-zip
     app = Path(f"{exe}")
@@ -65,6 +66,7 @@ def on_application_load(a, b):
 def register() -> None:
     print("Addon Registration Begin ==============>")
     #add_executable_permission(FileUtils.get_executable_filepath())
+    bpy.utils.register_class(BWP_OT_OperatorClearPackageJsonCache)
     register_preferences()
     register_translations()
     register_sidebar_menu()
@@ -76,6 +78,7 @@ def register() -> None:
 
 def unregister() -> None:
     print("Addon Unregistration Begin ============>")
+    bpy.utils.unregister_class(BWP_OT_OperatorClearPackageJsonCache)
     unregister_preferences()
     unregister_translations()
     unregister_sidebar_menu()

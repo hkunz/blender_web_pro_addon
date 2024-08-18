@@ -17,6 +17,10 @@ class PackageJson:
         self.data_cache = {}
         self.initialized = True
 
+    def clear_cache_all(self):
+        for key in list(self.data_cache.keys()):
+            del self.data_cache[key]
+
     def clear_cache(self, directory_path):
         """Clear the cached data for all files in the specified directory."""
         # Collect all file paths to remove from cache
@@ -36,13 +40,13 @@ class PackageJson:
             return
 
         if not os.path.isfile(file_path):
-            #print(f"File not found: {file_path}")
+            # print(f"File not found: {file_path}")
             self.data = {}
             return
 
         try:
             with open(file_path, 'r') as file:
-                print(f"Load package.json: {file}")
+                print(f"Load package.json: {file_path}")
                 self.data = json.load(file)
                 self.data_cache[file_path] = self.data
         except json.JSONDecodeError:
@@ -56,9 +60,12 @@ class PackageJson:
         self.load_data(new_file_path, force_reload)
 
     def get_dependency_version(self, package_name):
-        """Get the version of a specified dependency from cached data."""
         dependencies = self.data.get('dependencies', {})
         return dependencies.get(package_name, None)
+
+    def get_dev_dependency_version(self, package_name):
+        dev_dependencies = self.data.get('devDependencies', {})
+        return dev_dependencies.get(package_name, None)
 
     def get_threejs_version(self):
         return self.get_dependency_version("three")
@@ -66,13 +73,7 @@ class PackageJson:
     def get_vite_version(self):
         return self.get_dev_dependency_version("vite")
 
-    def get_dev_dependency_version(self, package_name):
-        """Get the version of a specified devDependency from cached data."""
-        dev_dependencies = self.data.get('devDependencies', {})
-        return dev_dependencies.get(package_name, None)
-
     def check_dependencies(self):
-        """Check and print the version of 'three' in dependencies."""
         three_version = self.get_dependency_version('three')
         if three_version:
             print(f"'three' found in dependencies with version: {three_version}")
@@ -80,7 +81,6 @@ class PackageJson:
             print("'three' not found in dependencies")
 
     def check_dev_dependencies(self):
-        """Check and print the version of 'vite' in devDependencies."""
         vite_version = self.get_dev_dependency_version('vite')
         if vite_version:
             print(f"'vite' found in devDependencies with version: {vite_version}")

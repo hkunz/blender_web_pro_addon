@@ -8,6 +8,7 @@ from blender_web_pro.operators.common.operator_generic_popup import create_gener
 from blender_web_pro.ui.property_groups.property_group_userinterface_properties import UserInterfacePropertyGroup # type: ignore
 from blender_web_pro.utils.package_json import PackageJson # type: ignore
 from blender_web_pro.utils.file_utils import FileUtils # type: ignore
+from blender_web_pro.utils.ui_utils import UiUtils # type: ignore
 
 class WEB_OT_OperatorInstallDependency(OperatorScriptBase):
     bl_options = {'INTERNAL'}
@@ -50,4 +51,5 @@ class WEB_OT_OperatorInstallDependency(OperatorScriptBase):
 
     def handle_success(self, result, context):
         directory = result.get("directoryPath", "Unknown directory path")
-        PackageJson().clear_cache(directory)
+        PackageJson().set_directory(directory, True)
+        UiUtils.update_ui(context)
