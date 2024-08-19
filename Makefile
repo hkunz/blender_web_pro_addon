@@ -23,6 +23,9 @@ create-next-tag:
 	@echo "Create new tag ..."
 	./scripts/create-tag.sh -i
 
+generate-test-web-project:
+	./scripts/generate-test-web-project.sh
+
 zip:
 	./scripts/build-zip.sh
 

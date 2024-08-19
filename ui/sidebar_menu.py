@@ -3,6 +3,7 @@ import bpy
 from typing import List, Tuple
 from bpy.app.handlers import persistent
 
+from blender_web_pro.enums.debug_enum import DebugEnum # type: ignore
 from blender_web_pro.operators.operator_empty import OBJECT_OT_OperatorEmpty # type: ignore
 from blender_web_pro.operators.file.operator_file_vox_exporter import EXPORT_OT_file_vox # type: ignore
 from blender_web_pro.operators.cache.operator_clear_all_temp_cache import register as register_all_temp_cache_operator, unregister as unregister_all_temp_cache_operator # type: ignore
@@ -86,7 +87,7 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
         layout: bpy.types.UILayout = self.layout
         props = context.scene.installation_props
 
-        if props.check_installation and not props.DEBUG_SKIP_INSTALL_CHECK:
+        if props.check_installation and not DebugEnum.DEBUG_SKIP_INSTALL_CHECK:
             layout.operator(WEB_OT_OperatorInstallCheck.bl_idname, text="Check Installation")
             return
 
@@ -95,7 +96,7 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
             props.installation_status_nodejs == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED #and \
             #props.installation_status_nvm == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED
 
-        complete_installation = complete_installation or props.DEBUG_SKIP_INSTALL_CHECK
+        complete_installation = complete_installation or DebugEnum.DEBUG_SKIP_INSTALL_CHECK
         config_complete = self.draw_expanded_installation(context, layout, complete_installation)
 
         if not complete_installation or not config_complete:
@@ -139,7 +140,7 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
             self.create_install_button(col, WEB_OT_OperatorInstallNodeJS.bl_idname, text="Node.js", state=props.installation_status_nodejs, version=props.installed_nodejs_v)
             #self.create_install_button(col, WEB_OT_OperatorInstallNVM.bl_idname, text="NVM", state=props.installation_status_nvm, version=props.installed_nvm_v)
 
-            if not complete_installation and not props.DEBUG_SKIP_INSTALL_CHECK:
+            if not complete_installation and not DebugEnum.DEBUG_SKIP_INSTALL_CHECK:
                 return False
 
             box = layout.box().column()

@@ -48,8 +48,7 @@ class FileUtils:
         return os.path.splitext(file_path)[1][1:].lower()
 
     @staticmethod
-    def copy_template_file(directory, template_file, skip_exists=True):
-        DEBUG_OVERWRITE = True
+    def copy_template_file(directory, template_file, skip_exists=True, symlink=False):
         tgt = os.path.join(directory, template_file.replace(".template", ""))
         if skip_exists and os.path.isfile(tgt):
             print("Skip copy template file since it already exists: ", tgt)
@@ -57,4 +56,10 @@ class FileUtils:
         src = os.path.join(FileUtils.get_addon_root_dir(), f'resources/templates/{template_file}')
         msg = f"Generated file: {tgt}"
         print(msg)
-        return shutil.copy(src, tgt)
+        if os.path.exists(tgt):
+            os.remove(tgt)
+        if symlink:
+            os.symlink(src, tgt)
+        else:
+            tgt = shutil.copy(src, tgt)
+        return tgt

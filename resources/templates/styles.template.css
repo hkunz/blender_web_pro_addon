@@ -28,6 +28,8 @@ main {
     padding: 2rem;
     position: relative; /* Ensure this is above the canvas */
     z-index: 1;
+    background-color: white;
+    padding: 20px; /* Optional: Add padding for better spacing */
 }
 
 h1, p, a {

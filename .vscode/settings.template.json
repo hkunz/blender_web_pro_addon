@@ -1,0 +1,5 @@
+{
+  "liveServer.settings.donotVerifyTags": true,
+  "liveServer.settings.root": "/test/test-project/",
+  "comment": "The liveServer.settings.root is currently not needed for this project, maybe for documentation test.. so we can use it for something else"
+}

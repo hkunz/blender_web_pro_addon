@@ -3,6 +3,8 @@ import bpy_types
 
 from typing import List, Tuple
 
+from blender_web_pro.enums.debug_enum import DebugEnum # type: ignore
+
 def my_sample_settings_callback(self: bpy.types.Scene, context: bpy_types.Context) -> List[Tuple[str, str, str]]:
     SAMPLE_LIST: List[Tuple[str, str, str]] = [
         ("NONE", "None", "Item Description"),
@@ -16,7 +18,8 @@ class UserInterfacePropertyGroup(bpy.types.PropertyGroup):
     output_directory: bpy.props.StringProperty(
         name="",
         description="Directory where to install Three.js",
-        subtype='DIR_PATH'
+        subtype='DIR_PATH',
+        default=f"{DebugEnum.DEBUG_PROJECT_PATH}"
     ) # type: ignore
 
     my_enum_prop: bpy.props.EnumProperty(

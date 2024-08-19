@@ -5,13 +5,6 @@ class InstallationPropertyGroup(bpy.types.PropertyGroup):
     INSTALLATION_STATUS_INSTALLED = 1
     INSTALLATION_STATUS_ERROR = 2
 
-    DEBUG_SKIP_INSTALL_CHECK: bpy.props.BoolProperty(
-        name="Check Installation",
-        description="Skip installation check only for testing purposes. Should always be False in production",
-        default=False
-        ,
-    ) # type: ignore
-
     check_installation: bpy.props.BoolProperty(
         name="Check Installation",
         description="Check Installation for Chocolatey, Node.js, npm, npx, and nvm",
