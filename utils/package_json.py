@@ -21,26 +21,33 @@ class PackageJson:
         for key in list(self.data_cache.keys()):
             del self.data_cache[key]
 
-    def clear_cache(self, directory_path):
-        """Clear the cached data for all files in the specified directory."""
-        # Collect all file paths to remove from cache
-        file_paths_to_remove = [fp for fp in self.data_cache.keys() if os.path.dirname(fp) == directory_path]
+    def clear_cache(self, file_path):
+        """Clear the cached data for the specified directory."""
+        print(f"Clearing cache for directory: {file_path}")
 
-        for file_path in file_paths_to_remove:
+        for file_path in [f for f in self.data_cache.keys()]:
             print(f"Clear package.json cache for {file_path}")
             del self.data_cache[file_path]
-            if self.file_path and os.path.dirname(self.file_path) == directory_path:
-                self.data = {}
+
+        # Clear self.data if the current file_path is in the specified directory
+        if self.file_path and self.file_path == file_path:
+            print(f"Clearing self.data for file_path: {self.file_path}")
+            self.file_path = None
+            self.data = {}
+        else:
+            print(f"self.file_path not in the specified directory or not set: {self.file_path}")
+
+        print("Cache clearing complete.")
 
     def load_data(self, file_path, force_reload=False):
         """Load JSON data from the file and cache it."""
         if not force_reload and file_path in self.data_cache:
-            # print("Using package.json cache since it's already loaded for: ", file_path)
+            print("Using package.json cache since it's already loaded for: ", file_path)
             self.data = self.data_cache[file_path]
             return
 
         if not os.path.isfile(file_path):
-            # print(f"File not found: {file_path}")
+            print(f"File not found: {file_path}")
             self.data = {}
             return
 
@@ -55,9 +62,14 @@ class PackageJson:
 
     def set_directory(self, new_directory, force_reload=False):
         """Switch to a new directory and load the package.json file if not cached."""
-        new_file_path = os.path.join(new_directory, 'package.json')
-        self.file_path = new_file_path
-        self.load_data(new_file_path, force_reload)
+        f = os.path.join(new_directory, 'package.json')
+        if not os.path.exists(f) and self.has_dependencies():
+            self.clear_cache(f)
+        self.file_path = f
+        self.load_data(f, force_reload)
+
+    def has_dependencies(self):
+        return self.get_threejs_version() or self.get_vite_version()
 
     def get_dependency_version(self, package_name):
         dependencies = self.data.get('dependencies', {})

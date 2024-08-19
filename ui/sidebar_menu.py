@@ -142,9 +142,9 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
             box.prop(properties, "output_directory")
             props: UserInterfacePropertyGroup = context.scene.userinterface_props
             package_json = PackageJson()
+            package_json.set_directory(props.output_directory)
             threejs_version = package_json.get_threejs_version()
             vite_version = package_json.get_vite_version()
-            package_json.set_directory(props.output_directory)
             self.create_install_button(box, WEB_OT_OperatorInstallThreeJS.bl_idname, text="Three.js", state=bool(threejs_version), version=threejs_version)
             self.create_install_button(box, WEB_OT_OperatorInstallViteDependency.bl_idname, text="Vite", state=bool(vite_version), version=vite_version)
             #col.prop(data=context.scene.render,property="fps",text="Frame Rate 2") # https://blender.stackexchange.com/questions/317553/how-to-exposure-render-settings-to-addon-panel/317565#317565
