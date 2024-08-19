@@ -8,9 +8,9 @@ directory = sys.argv[1] if len(sys.argv) > 1 else '.'
 def kill_vite_processes():
     result = None
     if platform.system() == "Windows":
-        result = subprocess.run(['taskkill', '/F', '/IM', 'node.exe'])
+        result = subprocess.run(['taskkill', '/F', '/IM', 'node.exe'], capture_output=True, text=True)
     else:
-        result = subprocess.run(['pkill', '-f', 'vite'])
+        result = subprocess.run(['pkill', '-f', 'vite'], capture_output=True, text=True)
     if not result.stderr:
         print("subprocess result:", result)
     elif 'not found' in result.stderr:

@@ -92,13 +92,13 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
 
         complete_installation = \
             props.installation_status_choco == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED and \
-            props.installation_status_nodejs == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED and \
-            props.installation_status_nvm == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED
+            props.installation_status_nodejs == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED #and \
+            #props.installation_status_nvm == InstallationPropertyGroup.INSTALLATION_STATUS_INSTALLED
+
         complete_installation = complete_installation or props.DEBUG_SKIP_INSTALL_CHECK
+        config_complete = self.draw_expanded_installation(context, layout, complete_installation)
 
-        self.draw_expanded_installation(context, layout, complete_installation)
-
-        if not complete_installation:
+        if not complete_installation or not config_complete:
             return
 
         self.draw_sample_expanded_options(context, layout)
@@ -126,31 +126,34 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
             icon=IconsManager.BUILTIN_ICON_DOWN if context.scene.expanded_installation else IconsManager.BUILTIN_ICON_RIGHT,
             icon_only=True, emboss=False
         )
-        row.label(text="Installation")
+        row.label(text="Install & Configure")
+        package_json = PackageJson()
+        package_json.set_directory(context.scene.userinterface_props.output_directory)
+        threejs_version = package_json.get_threejs_version()
+        vite_version = package_json.get_vite_version()
+
         if context.scene.expanded_installation:
             properties: UserInterfacePropertyGroup = context.scene.userinterface_props
             col = layout.box().column()
             self.create_install_button(col, WEB_OT_OperatorInstallChoco.bl_idname, text="Chocolatey", state=props.installation_status_choco, version=props.installed_choco_v)
             self.create_install_button(col, WEB_OT_OperatorInstallNodeJS.bl_idname, text="Node.js", state=props.installation_status_nodejs, version=props.installed_nodejs_v)
-            self.create_install_button(col, WEB_OT_OperatorInstallNVM.bl_idname, text="NVM", state=props.installation_status_nvm, version=props.installed_nvm_v)
+            #self.create_install_button(col, WEB_OT_OperatorInstallNVM.bl_idname, text="NVM", state=props.installation_status_nvm, version=props.installed_nvm_v)
 
-            if not complete_installation:
-                return
+            if not complete_installation and not props.DEBUG_SKIP_INSTALL_CHECK:
+                return False
 
             box = layout.box().column()
             #box.label(text="Project Directory", icon="FILEBROWSER")
             box.prop(properties, "output_directory")
-            props: UserInterfacePropertyGroup = context.scene.userinterface_props
-            package_json = PackageJson()
-            package_json.set_directory(props.output_directory)
-            threejs_version = package_json.get_threejs_version()
-            vite_version = package_json.get_vite_version()
             self.create_install_button(box, WEB_OT_OperatorInstallThreeJS.bl_idname, text="Three.js", state=bool(threejs_version), version=threejs_version)
             self.create_install_button(box, WEB_OT_OperatorInstallViteDependency.bl_idname, text="Vite", state=bool(vite_version), version=vite_version)
             #col.prop(data=context.scene.render,property="fps",text="Frame Rate 2") # https://blender.stackexchange.com/questions/317553/how-to-exposure-render-settings-to-addon-panel/317565#317565
             #self.add_layout_gn_prop(layout, context.object.modifiers["Geometry Nodes"], "Socket_2") # https://blender.stackexchange.com/questions/317571/how-can-i-expose-geometry-nodes-properties-in-my-addon-panel/317586
             #col.operator(EXPORT_OT_file_vox.bl_idname, text="Export Button")
             #col.operator(WEB_OT_OperatorTestWeb.bl_idname, text="Test Web")
+
+        config_complete = (threejs_version and vite_version)
+        return config_complete
 
     def create_install_dep_button(self, layout, operator, text, version):
         row = layout.row(align=True)
@@ -178,12 +181,12 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
             icon=IconsManager.BUILTIN_ICON_DOWN if context.scene.expanded_options else IconsManager.BUILTIN_ICON_RIGHT,
             icon_only=True, emboss=False
         )
-        row.label(text="Export")
+        row.label(text="Create Scene")
         if context.scene.expanded_options:
             col = layout.column()
-            col.prop(data=context.scene.render,property="fps",text="Frame Rate") # https://blender.stackexchange.com/questions/317553/how-to-exposure-render-settings-to-addon-panel/317565#317565
+            #col.prop(data=context.scene.render,property="fps",text="Frame Rate") # https://blender.stackexchange.com/questions/317553/how-to-exposure-render-settings-to-addon-panel/317565#317565
             #self.add_layout_gn_prop(layout, context.object.modifiers["Geometry Nodes"], "Socket_2") # https://blender.stackexchange.com/questions/317571/how-can-i-expose-geometry-nodes-properties-in-my-addon-panel/317586
-            col.operator(EXPORT_OT_file_vox.bl_idname, text="Export Button")
+            #col.operator(EXPORT_OT_file_vox.bl_idname, text="Export Button")
             col.operator(WEB_OT_OperatorTestWeb.bl_idname, text="Test Web")
 
     def draw_sample_color_picker(self, context, layout):

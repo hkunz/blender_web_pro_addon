@@ -165,7 +165,9 @@ if ((Get-Command npx -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NPX) {
     }
 }
 
-# Check NVM:
+
+# Check NVM: (This should happen before Node.js installation because you need NVM to manage multiple Node.js installations)
+<#
 $install_name = "Node Version Manager (NVM)"
 $version = ""
 Write-Host "Checking if $install_name is already installed ..."
@@ -189,6 +191,7 @@ if ((Get-Command nvm -ErrorAction SilentlyContinue) -and !$TEST_INSTALL_NVM) {
     $result.infos += $msg
     Write-Host "$msg" -ForegroundColor Yellow
 }
+#>
 
 $result.infos += "Blender Web Pro Installation check complete!"
 

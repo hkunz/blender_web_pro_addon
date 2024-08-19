@@ -33,7 +33,7 @@ bl_info = {
     "wiki_url": "https://blendermarket.com/products/blender_web_pro/docs",
     "tracker_url": "https://blendermarket.com/products/blender_web_pro/docs",
     "support": "COMMUNITY",
-    "category": "Import-Export",
+    "category": "Export",
 }
 
 import bpy

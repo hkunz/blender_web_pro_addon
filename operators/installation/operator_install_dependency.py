@@ -27,27 +27,22 @@ class WEB_OT_OperatorInstallDependency(OperatorScriptBase):
             return False
         return True
 
-    def execute_script(self, context):
+    def generate_config_files(self, context):
         props: UserInterfacePropertyGroup = context.scene.userinterface_props
         directory = props.output_directory.strip()
         p = os.path.join(directory, "public")
         os.makedirs(p, exist_ok=True)
-        v = self.copy_template_file(directory, "vite.config.mjs")
-        i = self.copy_template_file(directory, "index.html")
-        m = self.copy_template_file(directory, "main.js")
-        if not (os.path.exists(v) and os.path.exists(i) and os.path.exists(m) and os.path.exists(p)):
-            self.report({'ERROR'}, f"One of the config files could not be generated: \n\t{p}\n\t{v}\n\t{i}\n\t{m}\n\t")
+        v = FileUtils.copy_template_file(directory, "vite.config.template.mjs")
+        if not (os.path.exists(v) and os.path.exists(p)):
+            self.report({'ERROR'}, f"One of the config files/directories could not be generated: \n\t{p}\n\t{v}")
+            return False
+        return True
+
+    def execute_script(self, context):
+        copy_success = self.generate_config_files(context)
+        if not copy_success:
             return
         super().execute_script(context)
-
-    def copy_template_file(self, directory, file):
-        tgt = os.path.join(directory, file)
-        if os.path.isfile(tgt):
-            print("Skip copy template file since it already exists: ", tgt)
-            return tgt
-        src = os.path.join(FileUtils.get_addon_root_dir(), f'resources/templates/{file}.template')
-        self.report({'INFO'}, f"Generated config file: {tgt}")
-        return shutil.copy(src, tgt)
 
     def handle_success(self, result, context):
         directory = result.get("directoryPath", "Unknown directory path")

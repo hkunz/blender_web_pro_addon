@@ -1,0 +1,36 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent scrollbars if canvas is full-screen */
+    position: relative; /* Positioning context for absolute elements */
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1; /* Ensure canvas is behind other content */
+}
+
+header, footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+    position: relative; /* Ensure these are above the canvas */
+    z-index: 1;
+}
+
+main {
+    padding: 2rem;
+    position: relative; /* Ensure this is above the canvas */
+    z-index: 1;
+}
+
+h1, p, a {
+    position: relative; /* Ensure text and links are above the canvas */
+    z-index: 1;
+}

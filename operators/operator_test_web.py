@@ -6,6 +6,7 @@ import json
 
 from blender_web_pro.utils.file_utils import FileUtils # type: ignore
 from blender_web_pro.utils.package_json import PackageJson # type: ignore
+from blender_web_pro.ui.property_groups.property_group_userinterface_properties import UserInterfacePropertyGroup # type: ignore
 from blender_web_pro.operators.common.operator_generic_popup import create_generic_popup # type: ignore
 
 class WEB_OT_OperatorTestWeb(bpy.types.Operator):
@@ -27,8 +28,22 @@ class WEB_OT_OperatorTestWeb(bpy.types.Operator):
         subprocess.Popen(['python', server_script, directory])
         bpy.app.timers.register(self.sleepy, first_interval=0.1)
 
+    def copy_template_files(self, context, skip_exists):
+        props: UserInterfacePropertyGroup = context.scene.userinterface_props
+        directory = props.output_directory.strip()
+        i = FileUtils.copy_template_file(directory, "index.template.html", skip_exists)
+        m = FileUtils.copy_template_file(directory, "main.template.js", skip_exists)
+        s = FileUtils.copy_template_file(directory, "styles.template.css", skip_exists)
+        if not (os.path.exists(i) and os.path.exists(m) and os.path.exists(s)):
+            self.report({'ERROR'}, f"One of the web files could not be generated: \n\t{i}\n\t{m}\n\t{s}\n\t")
+            return False
+        return True
+
     def execute(self, context):
-        self.start_vite_server(context)
+        DEBUG_OVERWRITE = True
+        copy_success = self.copy_template_files(context, not DEBUG_OVERWRITE)
+        if copy_success:
+            self.start_vite_server(context)
         return {'FINISHED'}
 
     def check_valid_vite_directory(self, directory):
