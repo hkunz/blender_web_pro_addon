@@ -1,4 +1,6 @@
 {
+  "_comment": "This file is merely for reference and is not currently used. It is generated automatically by npm init -y in install-dependency.ps1",
+
   "dependencies": {
     "three": "^0.167.1"
   },
