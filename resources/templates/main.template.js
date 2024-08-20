@@ -8,6 +8,17 @@ const loader = new GLTFLoader();
 */
 
 // Creating Scene: https://threejs.org/docs/#manual/en/introduction/Creating-a-scene
+import WebGL from 'three/addons/capabilities/WebGL.js';
+
+if ( !WebGL.isWebGL2Available() ) {
+	const warning = WebGL.getWebGL2ErrorMessage();
+    const warningContainer = document.createElement('div');
+    warningContainer.textContent = "ERROR"
+    warningContainer.className = 'warning-message';
+    warningContainer.appendChild(warning)
+    document.body.appendChild(warningContainer);
+}
+
 import * as THREE from 'three';
 
 const scene = new THREE.Scene();
@@ -23,7 +34,9 @@ document.body.appendChild( renderer.domElement );
 const geometry = new THREE.BoxGeometry( 1, 1, 1 );
 const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
 const cube = new THREE.Mesh( geometry, material );
+cube.position.y -= 0.6;
 scene.add( cube );
+
 
 camera.position.z = 5;
 

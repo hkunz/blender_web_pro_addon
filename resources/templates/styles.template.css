@@ -36,3 +36,12 @@ h1, p, a {
     position: relative; /* Ensure text and links are above the canvas */
     z-index: 1;
 }
+
+.warning-message {
+    border: 2px solid red;
+    padding: 10px;
+    margin: 10px;
+    background-color: #fdd; /* Light red background for visibility */
+    color: #d00; /* Dark red text for visibility */
+    font-family: Arial, sans-serif; /* Optional: for better readability */
+  }
