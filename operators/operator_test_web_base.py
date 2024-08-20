@@ -47,7 +47,7 @@ class WEB_OT_OperatorTestWebBase(bpy.types.Operator):
         return os.path.join(output_directory, "vite.config.mjs")
 
     def get_web_file(self):
-        return "test.html"
+        return "index.html"
 
     def update_vite_config(self):
         config = self.get_vite_config_file_path()
@@ -56,11 +56,14 @@ class WEB_OT_OperatorTestWebBase(bpy.types.Operator):
         content = None
         with open(config, 'r') as file:
             content = file.read()
-        pattern = r'(open:\s*)["\'][^"\']*["\']'
+        pattern = r'(open:\s*)[^,\}\n]*'
         replacement = rf'\1"{self.get_web_file()}"'
-        new_content = re.sub(pattern, replacement, content)
+        new_content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
+        if new_content == content:
+            return
         with open(config, 'w') as file:
             file.write(new_content)
+        print(f"Updated config file: {config}")
 
     def execute(self, context):
         self.update_vite_config()

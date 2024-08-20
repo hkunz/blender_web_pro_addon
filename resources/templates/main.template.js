@@ -32,7 +32,7 @@ document.body.appendChild( renderer.domElement );
 
 // Add Cube:
 const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+const material = new THREE.MeshBasicMaterial( { color: 0x0033ff } );
 const cube = new THREE.Mesh( geometry, material );
 cube.position.y -= 0.6;
 scene.add( cube );
@@ -64,4 +64,4 @@ points.push( new THREE.Vector3( 4, -1, 0 ) );
 const geometry2 = new THREE.BufferGeometry().setFromPoints( points );
 
 const line = new THREE.Line( geometry2, material2 );
-scene.add( line );
+//scene.add( line );
