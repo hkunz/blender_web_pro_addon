@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-    Downloads and installs Chocolatey on the local machine.
+    Downloads and installs Chocolatey on the local machine. (https://community.chocolatey.org/install.ps1)
 
     .DESCRIPTION
     Retrieves the Chocolatey nupkg for the latest or a specified version, and

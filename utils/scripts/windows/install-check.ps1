@@ -1,4 +1,3 @@
-. "$PSScriptRoot\common\constants.ps1"
 . "$PSScriptRoot\common\exit-codes.ps1"
 . "$PSScriptRoot\common\utils.ps1"
 

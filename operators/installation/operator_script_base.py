@@ -10,9 +10,6 @@ from blender_web_pro.utils.ui_utils import UiUtils # type: ignore
 class OperatorScriptBase(OperatorGenericPopup):
     bl_options = {'INTERNAL'}
 
-    LINE_END = '{LINE_END}'
-    NEW_LINE = '\n'
-
     def get_log_file(self):
         return NotImplementedError("Subclasses must implement this method")
 
@@ -74,11 +71,7 @@ class OperatorScriptBase(OperatorGenericPopup):
 
     def report_command_output(self, output_list):
         for output in output_list:
-            output_str = str(output)
-            lines = output_str.split(OperatorScriptBase.LINE_END)
-            for line in lines:
-                if line.strip():  # Optional: Skip empty lines
-                    self.report({'INFO'}, line)
+            self.report({'INFO'}, str(output))
 
     def on_script_exit_success(self, context):
         result = self.get_logs_json()
@@ -102,7 +95,6 @@ class OperatorScriptBase(OperatorGenericPopup):
             message += f"|{exception},,TRIA_RIGHT"
         create_generic_popup(message=message)
         msg = exception_full if exception_full else (exception if exception else error)
-        msg = "".join(msg).replace(OperatorScriptBase.LINE_END, OperatorScriptBase.NEW_LINE)
         if not errors:
             self.report({'ERROR'}, f"{msg}")
             return

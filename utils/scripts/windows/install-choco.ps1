@@ -1,5 +1,4 @@
 . "$PSScriptRoot\common\exit-codes.ps1"
-. "$PSScriptRoot\common\constants.ps1"
 . "$PSScriptRoot\common\utils.ps1"
 
 Write-Host ""

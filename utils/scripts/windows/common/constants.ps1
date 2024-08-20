@@ -1,1 +1,0 @@
-$global:LINE_END = "{LINE_END}"
