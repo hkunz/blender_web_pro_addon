@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blender Web Pro">
+    <title>Blender Web Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent scrollbars if canvas is full-screen */
+            position: relative; /* Positioning context for absolute elements */
+        }
+        
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1; /* Ensure canvas is behind other content */
+        }
+        
+        header, footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            position: relative; /* Ensure these are above the canvas */
+            z-index: 1;
+        }
+        
+        main {
+            padding: 2rem;
+            position: relative; /* Ensure this is above the canvas */
+            z-index: 1;
+            background-color: white;
+            padding: 20px; /* Optional: Add padding for better spacing */
+        }
+        
+        h1, p, a {
+            position: relative; /* Ensure text and links are above the canvas */
+            z-index: 1;
+        }
+        
+        .warning-message {
+            border: 2px solid red;
+            padding: 10px;
+            margin: 10px;
+            background-color: #fdd; /* Light red background for visibility */
+            color: #d00; /* Dark red text for visibility */
+            font-family: Arial, sans-serif; /* Optional: for better readability */
+          }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Blender Web Pro</h1>
+    </header>
+
+    <main>
+        <h2>Welcome to Blender Web Pro Test Page</h2>
+        <p>You have successfully tested opening a web page with Blender Web Pro. </p>
+        <p>For more information, visit <a href="https://blendermarket.com/creators/harrymckenzie">Blender Web Pro</a>.</p>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Blender Web Pro</p>
+    </footer>
+    <script>
+        import WebGL from 'three/addons/capabilities/WebGL.js';
+
+        if ( !WebGL.isWebGL2Available() ) {
+            const warning = WebGL.getWebGL2ErrorMessage();
+            const warningContainer = document.createElement('div');
+            warningContainer.textContent = "ERROR"
+            warningContainer.className = 'warning-message';
+            warningContainer.appendChild(warning)
+            document.body.appendChild(warningContainer);
+        }
+
+        import * as THREE from 'three';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ); //FOV, Aspect Ratio, Near, Far (clipping)
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        // setSize(window.innerWidth/2, window.innerHeight/2, false) // will render your app at half resolution, given that your <canvas> has 100% width and height.
+        document.body.appendChild( renderer.domElement );
+        // renderer.setAnimationLoop( animate );
+
+        // Add Cube:
+        const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+        const cube = new THREE.Mesh( geometry, material );
+        cube.position.y -= 0.6;
+        scene.add( cube );
+
+
+        camera.position.z = 5;
+
+        // This will create a loop that causes the renderer to draw the scene every time the screen is refreshed (on a typical screen this means 60 times per second).
+        function animate() {
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            renderer.render( scene, camera );
+        }
+
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        renderer.setAnimationLoop( animate );
+        animate();
+    </script>
+</body>
+</html>

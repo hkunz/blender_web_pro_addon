@@ -9,12 +9,12 @@ from blender_web_pro.operators.file.operator_file_vox_exporter import EXPORT_OT_
 from blender_web_pro.operators.cache.operator_clear_all_temp_cache import register as register_all_temp_cache_operator, unregister as unregister_all_temp_cache_operator # type: ignore
 from blender_web_pro.operators.cache.operator_clear_temp_cache import register as register_temp_cache_operator, unregister as unregister_temp_cache_operator # type: ignore
 from blender_web_pro.operators.operator_test_web import WEB_OT_OperatorTestWeb # type: ignore
+from blender_web_pro.operators.operator_test_web_export import WEB_OT_OperatorTestWebExport # type: ignore
 from blender_web_pro.operators.installation.operator_install_check import WEB_OT_OperatorInstallCheck # type: ignore
 from blender_web_pro.operators.installation.operator_install_choco import WEB_OT_OperatorInstallChoco # type: ignore
 from blender_web_pro.operators.installation.operator_install_nodejs_choco import WEB_OT_OperatorInstallNodeJS # type: ignore
 from blender_web_pro.operators.installation.operator_install_nvm import WEB_OT_OperatorInstallNVM # type: ignore
 from blender_web_pro.operators.installation.operator_install_threejs import WEB_OT_OperatorInstallThreeJS # type: ignore
-from blender_web_pro.operators.installation.operator_install_vite_dependency import WEB_OT_OperatorInstallViteDependency # type: ignore
 from blender_web_pro.operators.installation.operator_install_vite_dependency import WEB_OT_OperatorInstallViteDependency # type: ignore
 from blender_web_pro.operators.installation.operator_uninstall_web_pro_dependencies import WEB_OT_OperatorUninstallWebProDependencies # type: ignore
 from blender_web_pro.ui.property_groups.property_group_installation_properties import InstallationPropertyGroup # type: ignore
@@ -188,7 +188,8 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
             #col.prop(data=context.scene.render,property="fps",text="Frame Rate") # https://blender.stackexchange.com/questions/317553/how-to-exposure-render-settings-to-addon-panel/317565#317565
             #self.add_layout_gn_prop(layout, context.object.modifiers["Geometry Nodes"], "Socket_2") # https://blender.stackexchange.com/questions/317571/how-can-i-expose-geometry-nodes-properties-in-my-addon-panel/317586
             #col.operator(EXPORT_OT_file_vox.bl_idname, text="Export Button")
-            col.operator(WEB_OT_OperatorTestWeb.bl_idname, text="Test Web")
+            col.operator(WEB_OT_OperatorTestWeb.bl_idname, text="Test Three.js")
+            col.operator(WEB_OT_OperatorTestWebExport.bl_idname, text="Test Web Export")
 
     def draw_sample_color_picker(self, context, layout):
         ob = context.object
@@ -231,6 +232,7 @@ def register() -> None:
     bpy.utils.register_class(WEB_OT_OperatorInstallThreeJS)
     bpy.utils.register_class(WEB_OT_OperatorInstallViteDependency)
     bpy.utils.register_class(WEB_OT_OperatorTestWeb)
+    bpy.utils.register_class(WEB_OT_OperatorTestWebExport)
     bpy.utils.register_class(WEB_OT_OperatorUninstallWebProDependencies)
     bpy.types.Material.my_slot_setting = bpy.props.PointerProperty(type=MyPropertyGroup2)
     bpy.types.Scene.userinterface_props = bpy.props.PointerProperty(type=UserInterfacePropertyGroup)
@@ -254,6 +256,7 @@ def unregister() -> None:
     bpy.utils.unregister_class(WEB_OT_OperatorInstallNVM)
     bpy.utils.unregister_class(WEB_OT_OperatorInstallThreeJS)
     bpy.utils.unregister_class(WEB_OT_OperatorInstallViteDependency)
+    bpy.utils.unregister_class(WEB_OT_OperatorTestWebExport)
     bpy.utils.unregister_class(WEB_OT_OperatorTestWeb)
     bpy.utils.unregister_class(WEB_OT_OperatorUninstallWebProDependencies)
     del bpy.types.Material.my_slot_setting
