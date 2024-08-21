@@ -5,8 +5,8 @@ import { updateCameraAspect } from '../helpers/CameraHelper.js';
 import { SetAmbientLighting } from '../helpers/LightingHelper.js';
 import { loadModel } from '../helpers/ModelLoader.js'; // Import the new model loader
 
-const imagePath = '/dist/src/textures/kloofendal_48d_partly_cloudy_puresky_1k.hdr';
-const modelPath = '/dist/src/models/cube.glb'; // Update with the correct path to your model
+const imagePath = '/dist/src/textures/kloofendal_48d_partly_cloudy_puresky_1k.hdr'; // https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
+const modelPath = '/dist/src/models/cube.glb';
 
 console.log("Current script location:", window.location.href);
 console.log("Resolved image path:", new URL(imagePath, window.location.href).href);
