@@ -1,67 +1,60 @@
-/*
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import WebGL from 'three/examples/jsm/capabilities/WebGL.js';
 
-const controls = new OrbitControls( camera, renderer.domElement );
-const loader = new GLTFLoader();
-*/
-
-// Creating Scene: https://threejs.org/docs/#manual/en/introduction/Creating-a-scene
-import WebGL from 'three/addons/capabilities/WebGL.js';
-
-if ( !WebGL.isWebGL2Available() ) {
-	const warning = WebGL.getWebGL2ErrorMessage();
+if (!WebGL.isWebGL2Available()) {
+    const warning = WebGL.getWebGL2ErrorMessage();
     const warningContainer = document.createElement('div');
-    warningContainer.textContent = "ERROR"
+    warningContainer.textContent = "ERROR";
     warningContainer.className = 'warning-message';
-    warningContainer.appendChild(warning)
+    warningContainer.appendChild(warning);
     document.body.appendChild(warningContainer);
 }
 
-import * as THREE from 'three';
-
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ); //FOV, Aspect Ratio, Near, Far (clipping)
-
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize( window.innerWidth, window.innerHeight );
-// setSize(window.innerWidth/2, window.innerHeight/2, false) // will render your app at half resolution, given that your <canvas> has 100% width and height.
-document.body.appendChild( renderer.domElement );
-// renderer.setAnimationLoop( animate );
-
-// Add Cube:
-const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-const material = new THREE.MeshBasicMaterial( { color: 0x0033ff } );
-const cube = new THREE.Mesh( geometry, material );
-cube.position.y -= 0.6;
-scene.add( cube );
-
-
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 camera.position.z = 5;
-
-// This will create a loop that causes the renderer to draw the scene every time the screen is refreshed (on a typical screen this means 60 times per second).
-function animate() {
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-	renderer.render( scene, camera );
-}
 
 window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
 });
 
-renderer.setAnimationLoop( animate );
-animate();
+const hdrLoader = new RGBELoader();
+hdrLoader.load('sky2k.hdr', (hdrTexture) => {
+    hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
+    scene.background = hdrTexture;
+    scene.environment = hdrTexture;
 
-const material2 = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+    // Load GLTF model
+    const gltfLoader = new GLTFLoader();
+    gltfLoader.load('burger.glb', (gltf) => {
+        scene.add(gltf.scene);
+        render();
+    }, undefined, (error) => {
+        console.error('An error occurred loading the GLTF model:', error);
+    });
+}, undefined, (error) => {
+    console.error('An error occurred loading the HDR texture:', error);
+});
 
-const points = [];
-points.push( new THREE.Vector3( 0, 0, 0 ) );
-points.push( new THREE.Vector3( 0, -1, 0 ) );
-points.push( new THREE.Vector3( 4, -1, 0 ) );
+// Add lights
+const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
+scene.add(ambientLight);
 
-const geometry2 = new THREE.BufferGeometry().setFromPoints( points );
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(1, 1, 1).normalize();
+scene.add(directionalLight);
 
-const line = new THREE.Line( geometry2, material2 );
-//scene.add( line );
+// Render function
+function render() {
+    requestAnimationFrame(render);
+    renderer.render(scene, camera);
+}
+
+render();

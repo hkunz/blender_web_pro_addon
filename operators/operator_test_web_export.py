@@ -7,4 +7,4 @@ class WEB_OT_OperatorTestWebExport(WEB_OT_OperatorTestWebBase):
     bl_options = {'REGISTER'}
 
     def get_web_file(self):
-        return "index.html"
+        return "src/index.html"
