@@ -30,11 +30,9 @@ class WEB_OT_OperatorInstallDependency(OperatorScriptBase):
     def generate_config_files(self, context):
         props: UserInterfacePropertyGroup = context.scene.userinterface_props
         directory = props.output_directory.strip()
-        p = os.path.join(directory, "public")
-        os.makedirs(p, exist_ok=True)
         v = FileUtils.copy_template_file(directory, "vite.config.template.mjs")
-        if not (os.path.exists(v) and os.path.exists(p)):
-            self.report({'ERROR'}, f"One of the config files/directories could not be generated: \n\t{p}\n\t{v}")
+        if not (os.path.exists(v)):
+            self.report({'ERROR'}, f"One of the config files/directories could not be generated: \n\t{v}")
             return False
         return True
 

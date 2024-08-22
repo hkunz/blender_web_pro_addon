@@ -63,3 +63,8 @@ class FileUtils:
         else:
             tgt = shutil.copy(src, tgt)
         return tgt
+
+    # copy folders and their contents recursively from the source directory to the destination directory
+    @staticmethod
+    def copy_dir_contents(src, tgt, dirs_exist_ok=True):
+        shutil.copytree(src=src, dst=tgt, dirs_exist_ok=dirs_exist_ok)
