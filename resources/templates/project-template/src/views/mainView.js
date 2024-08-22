@@ -5,23 +5,21 @@ import { updateCameraAspect } from '../helpers/CameraHelper.js';
 import { SetAmbientLighting } from '../helpers/LightingHelper.js';
 import { loadModel } from '../helpers/ModelLoader.js'; // Import the new model loader
 
-const imagePath = '/dist/src/textures/kloofendal_48d_partly_cloudy_puresky_1k.hdr'; // https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
-const modelPath = '/dist/src/models/cube.glb';
+const imagePath = '/dist/src/textures/kloofendal_48d_partly_cloudy_puresky_1k.hdr';
+const modelPath = '/dist/src/models/metal-cube.glb'; // Update with the correct path to your model
 
-console.log("Current script location:", window.location.href);
-console.log("Resolved image path:", new URL(imagePath, window.location.href).href);
 
 export async function setupScene(canvas) {
     const scene = new THREE.Scene();
     const renderer = setupRenderer();
-    let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-    updateCameraAspect(camera);
+    updateCameraAspect(camera, renderer);
     scene.add(camera);
 
     // Set initial camera position and target
-    const radius = 10;
-    const cameraTarget = new THREE.Vector3(0, 0, 0); // Center of the scene, where the model is placed
+    const radius = 3;
+    const cameraTarget = new THREE.Vector3(0, 0, 0); // Center of the scene
 
     camera.position.set(radius, radius, radius);
     camera.lookAt(cameraTarget);
@@ -39,7 +37,8 @@ export async function setupScene(canvas) {
 
         // Rotate the model
         if (model) {
-            model.rotation.y += 0.01; // Adjust the rotation speed as needed
+            model.rotation.y += 0.005; // Adjust the rotation speed as needed
+            model.rotation.z += 0.001
         }
 
         // Rotate the camera around the target

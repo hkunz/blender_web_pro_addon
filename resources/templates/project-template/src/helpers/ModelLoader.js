@@ -6,6 +6,16 @@ export function loadModel(scene, modelPath) {
         loader.load(
             modelPath,
             (gltf) => {
+                // Set metallic properties on the loaded model
+                gltf.scene.traverse((child) => {
+                    if (child.isMesh) {
+                        //child.material.metalness = 1.0; // Fully metallic
+                        //child.material.roughness = 0.0; // No roughness
+                        child.material.envMap = scene.environment; // Set environment map for reflections
+                        child.material.envMapIntensity = 1.0; // Adjust environment map intensity
+                        child.material.needsUpdate = true; // Ensure material updates
+                    }
+                });
                 scene.add(gltf.scene);
                 resolve(gltf.scene); // Return the loaded model
             },

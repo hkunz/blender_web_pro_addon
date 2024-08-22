@@ -1,17 +1,21 @@
 import * as THREE from 'three';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
-export const setSkySphere = ( scene, imagePath) => {
+export function setSkySphere(scene, imagePath) {
+    new RGBELoader().load(imagePath, (hdrTexture) => {
+        hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
 
-   let hdrTexture = new RGBELoader().load(imagePath)
-   
-   let skySphereGeometry = new THREE.SphereGeometry(300, 60, 60);
-   let skySphereMaterial = new THREE.MeshPhongMaterial({
-     map: hdrTexture
-   });
-   
-   skySphereMaterial.side = THREE.BackSide;
-   let skySphereMesh = new THREE.Mesh(skySphereGeometry, skySphereMaterial);
-   scene.add(skySphereMesh)
- 
- }
+        // Set HDR as environment map
+        scene.environment = hdrTexture;
+        scene.background = hdrTexture;
+
+        // Create sky sphere
+        const skySphereGeometry = new THREE.SphereGeometry(300, 60, 60);
+        const skySphereMaterial = new THREE.MeshBasicMaterial({
+            map: hdrTexture,
+            side: THREE.BackSide
+        });
+        const skySphereMesh = new THREE.Mesh(skySphereGeometry, skySphereMaterial);
+        scene.add(skySphereMesh);
+    });
+}
