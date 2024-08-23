@@ -18,9 +18,10 @@ export function getFirstCameraInScene(scene){
 }
 	
 // Set the camera aspect ratio to match the browser window dimensions
-export function updateCameraAspect(camera) {
+export function updateCameraAspect(camera, renderer) {
 	const width = window.innerWidth;
 	const height = window.innerHeight;
 	camera.aspect = width / height;
 	camera.updateProjectionMatrix();
+	renderer.setSize(window.innerWidth, window.innerHeight);
 }

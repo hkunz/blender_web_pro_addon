@@ -50,4 +50,8 @@ export async function setupScene(canvas) {
         renderer.render(scene, camera);
     }
     animate();
+
+    window.addEventListener('resize', () => {
+        updateCameraAspect(camera, renderer);
+    });
 }
