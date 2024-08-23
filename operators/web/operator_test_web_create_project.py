@@ -3,13 +3,14 @@ import os
 
 from blender_web_pro.ui.property_groups.property_group_userinterface_properties import UserInterfacePropertyGroup # type: ignore
 from blender_web_pro.operators.common.operator_generic_popup import create_generic_popup # type: ignore
-from blender_web_pro.operators.operator_test_web_base import WEB_OT_OperatorTestWebBase # type: ignore
+from blender_web_pro.operators.web.operator_test_web_base import WEB_OT_OperatorTestWebBase # type: ignore
 from blender_web_pro.utils.file_utils import FileUtils # type: ignore
+from blender_web_pro.utils.ui_utils import UiUtils # type: ignore
 
 class WEB_OT_OperatorTestWebCreateProject(WEB_OT_OperatorTestWebBase):
-    bl_idname = "blender_web_pro.test_create_website_operator"
+    bl_idname = "blender_web_pro.create_project"
     bl_label = "Create Project"
-    bl_description = "Create Project by copying template files into chosen directory"
+    bl_description = "Create Project by copying Web Pro template files into chosen directory"
     bl_options = {'REGISTER'}
 
     def execute(self, context):
@@ -21,6 +22,7 @@ class WEB_OT_OperatorTestWebCreateProject(WEB_OT_OperatorTestWebBase):
         msg = f"Project Files Created"
         create_generic_popup(message=f"{msg},,CHECKMARK")
         self.report({'INFO'}, msg)
+        UiUtils.update_ui(context)
         return {'FINISHED'}
 
     @classmethod

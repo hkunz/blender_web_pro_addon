@@ -19,9 +19,19 @@ class WEB_OT_OperatorTestWebBase(bpy.types.Operator):
     def sleepy(self):
         time.sleep(5)
 
+    def get_wait_open_message(self):
+        return "The Test webpage is opening... Please wait."
+
+    def show_popup(self, context):
+        message = self.get_wait_open_message()
+        def draw(self, context):
+            self.layout.label(text=message)
+        context.window_manager.popup_menu(draw, title="Info", icon='INFO')
+
     def start_vite_server(self, context, directory):
         server_script = os.path.join(FileUtils.get_addon_root_dir(), r'utils/scripts/', r'start-vite-server.py')
-        context.window_manager.popup_menu(lambda self, context: self.layout.label(text="Web page will open... Please wait."), title="Info", icon='INFO')
+        #context.window_manager.popup_menu(lambda self, context: self.layout.label(text=self.get_wait_open_message()), title="Info", icon='INFO')
+        self.show_popup(context)
         subprocess.Popen(['python', server_script, directory])
         bpy.app.timers.register(self.sleepy, first_interval=0.1)
 
