@@ -1,6 +1,3 @@
-# Alternate solution for https://blender.stackexchange.com/questions/322779/how-can-i-get-info-report-to-show-up-before-subprocess-call
-# But this solution is not perfect yet
-
 import bpy
 import subprocess
 
@@ -27,10 +24,12 @@ class BlockUI(bpy.types.Operator):
         return {'RUNNING_MODAL'}
 
     @classmethod
-    def lock_UI(cls):
+    def lock_UI(cls, except_window=None):
         cls._finish_request = False
 
         for window in bpy.context.window_manager.windows:
+            if window is except_window:
+                continue
             if window not in cls._active_modals:
                 with bpy.context.temp_override(window=window):
                     bpy.ops.wm.blocking()
@@ -39,9 +38,6 @@ class BlockUI(bpy.types.Operator):
     def unlock_UI(cls):
         cls._finish_request = True
         cls._active_modals.clear()
-
-
-# Usage:
 
 class SimpleOperator(bpy.types.Operator):
     bl_idname = "object.simple_operator"
@@ -55,7 +51,10 @@ class SimpleOperator(bpy.types.Operator):
             title="Info",
             icon='INFO'
         )
-        BlockUI.lock_UI()
+        self.is_multi_window = len(context.window_manager.windows) != 1
+        if self.is_multi_window:
+            BlockUI.lock_UI(except_window=context.window)
+
         command = ["powershell", "-Command", "Start-Sleep -Seconds 5; Write-Output 'Completed long-running task'"]
         self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         context.window_manager.modal_handler_add(self)
@@ -63,14 +62,23 @@ class SimpleOperator(bpy.types.Operator):
         return {'RUNNING_MODAL'}
 
     def modal(self, context, event):
-        if self.process.poll() is not None:
-            output, error = self.process.communicate()
-            print("Command output:", output)
-            print("Command error:", error)
+        # need catch here because when your code raise error,
+        # operartor will dead and unlock_UI will never run, and the sub-window will lock forever.
+        
+        # Another problem is: you need add a modal timer to keep the modal running,
+        # Otherwise, the modal will not run when the mouse is not moving or no keyboard events.
+        try:
+            if self.process.poll() is not None:
+                output, error = self.process.communicate()
+                print("Command output:", output)
+                print("Command error:", error)
+                BlockUI.unlock_UI()
+                return {'FINISHED'}
+        except:
             BlockUI.unlock_UI()
             return {'FINISHED'}
 
-        return {'PASS_THROUGH'}
+        return {'RUNNING_MODAL'}
 
 classes = (
     BlockUI,
