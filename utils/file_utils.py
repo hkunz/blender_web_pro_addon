@@ -55,6 +55,15 @@ class FileUtils:
         else:
             print(f"'{dir}' is not a valid directory.")
 
+    def reset_directory(dir):
+        if os.path.exists(dir):
+            shutil.rmtree(dir)
+        else:
+            print(f"'{dir}' does not exist")
+            return False
+        os.makedirs(dir)
+        return True
+
     @staticmethod
     def copy_template_file(directory, template_file, skip_exists=True, symlink=False):
         tgt = os.path.join(directory, template_file.replace(".template", ""))
