@@ -1,4 +1,5 @@
 import bpy
+import os
 
 from typing import List, Tuple
 from bpy.app.handlers import persistent
@@ -9,6 +10,7 @@ from blender_web_pro.operators.file.operator_file_vox_exporter import EXPORT_OT_
 from blender_web_pro.operators.cache.operator_clear_all_temp_cache import register as register_all_temp_cache_operator, unregister as unregister_all_temp_cache_operator # type: ignore
 from blender_web_pro.operators.cache.operator_clear_temp_cache import register as register_temp_cache_operator, unregister as unregister_temp_cache_operator # type: ignore
 from blender_web_pro.operators.operator_test_web_create_project import WEB_OT_OperatorTestWebCreateProject # type: ignore
+from blender_web_pro.operators.operator_test_web_delete_project import WEB_OT_OperatorTestWebDeleteProject # type: ignore
 from blender_web_pro.operators.operator_test_web import WEB_OT_OperatorTestWeb # type: ignore
 from blender_web_pro.operators.operator_test_web_export import WEB_OT_OperatorTestWebExport # type: ignore
 from blender_web_pro.operators.installation.operator_install_check import WEB_OT_OperatorInstallCheck # type: ignore
@@ -190,7 +192,11 @@ class OBJECT_PT_my_addon_panel(bpy.types.Panel):
             #self.add_layout_gn_prop(layout, context.object.modifiers["Geometry Nodes"], "Socket_2") # https://blender.stackexchange.com/questions/317571/how-can-i-expose-geometry-nodes-properties-in-my-addon-panel/317586
             #col.operator(EXPORT_OT_file_vox.bl_idname, text="Export Button")
             col.operator(WEB_OT_OperatorTestWeb.bl_idname, text="Test Three.js")
-            col.operator(WEB_OT_OperatorTestWebCreateProject.bl_idname, text="Create Project")
+            props = context.scene.userinterface_props
+            directory = props.output_directory.strip()
+            index_html = os.path.join(directory, WEB_OT_OperatorTestWebCreateProject.get_web_file())
+            if not os.path.isfile(index_html):
+                col.operator(WEB_OT_OperatorTestWebCreateProject.bl_idname, text="Create Project")
             col.operator(WEB_OT_OperatorTestWebExport.bl_idname, text="Test Web Project")
 
     def draw_sample_color_picker(self, context, layout):
@@ -236,6 +242,7 @@ def register() -> None:
     bpy.utils.register_class(WEB_OT_OperatorTestWeb)
     bpy.utils.register_class(WEB_OT_OperatorTestWebExport)
     bpy.utils.register_class(WEB_OT_OperatorTestWebCreateProject)
+    bpy.utils.register_class(WEB_OT_OperatorTestWebDeleteProject)
     bpy.utils.register_class(WEB_OT_OperatorUninstallWebProDependencies)
     bpy.types.Material.my_slot_setting = bpy.props.PointerProperty(type=MyPropertyGroup2)
     bpy.types.Scene.userinterface_props = bpy.props.PointerProperty(type=UserInterfacePropertyGroup)
@@ -260,6 +267,7 @@ def unregister() -> None:
     bpy.utils.unregister_class(WEB_OT_OperatorInstallThreeJS)
     bpy.utils.unregister_class(WEB_OT_OperatorInstallViteDependency)
     bpy.utils.unregister_class(WEB_OT_OperatorTestWebCreateProject)
+    bpy.utils.unregister_class(WEB_OT_OperatorTestWebDeleteProject)
     bpy.utils.unregister_class(WEB_OT_OperatorTestWebExport)
     bpy.utils.unregister_class(WEB_OT_OperatorTestWeb)
     bpy.utils.unregister_class(WEB_OT_OperatorUninstallWebProDependencies)

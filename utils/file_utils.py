@@ -48,6 +48,14 @@ class FileUtils:
         return os.path.splitext(file_path)[1][1:].lower()
 
     @staticmethod
+    def delete_directory(dir):
+        if os.path.isdir(dir):
+            shutil.rmtree(dir)
+            print(f"'{dir}' has been deleted.")
+        else:
+            print(f"'{dir}' is not a valid directory.")
+
+    @staticmethod
     def copy_template_file(directory, template_file, skip_exists=True, symlink=False):
         tgt = os.path.join(directory, template_file.replace(".template", ""))
         if skip_exists and os.path.isfile(tgt):

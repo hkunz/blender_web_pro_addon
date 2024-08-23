@@ -17,9 +17,12 @@ class WEB_OT_OperatorTestWeb(WEB_OT_OperatorTestWebBase):
         os.makedirs(m, exist_ok=True)
         os.makedirs(t, exist_ok=True)
         src = os.path.join(FileUtils.get_addon_root_dir(), "resources/templates/project-template/dist/src/models/metal-cube.glb")
-        shutil.copy(src, m)
+        m = shutil.copy(src, m)
         src = os.path.join(FileUtils.get_addon_root_dir(), "resources/templates/project-template/dist/src/textures/kloofendal_48d_partly_cloudy_puresky_1k.hdr")
-        shutil.copy(src, t)
+        t = shutil.copy(src, t)
+        if not (os.path.isfile(m) and os.path.isfile(t)):
+            self.report({'ERROR'}, f"One of the required test files was not generated: \n\t{m}\n\t{t}")
+            return False
         return super().check_required_files_exist(directory, test)
 
     @classmethod

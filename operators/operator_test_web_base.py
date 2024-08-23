@@ -30,9 +30,10 @@ class WEB_OT_OperatorTestWebBase(bpy.types.Operator):
 
     @classmethod
     def get_web_file(cls):
-        return "index.html"
+        return "src/index.html"
 
-    def get_public_dir(self):
+    @classmethod
+    def get_public_dir(cls):
         return "public/"
 
     def update_vite_config(self, directory):

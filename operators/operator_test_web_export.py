@@ -18,4 +18,3 @@ class WEB_OT_OperatorTestWebExport(WEB_OT_OperatorTestWebBase):
         directory = props.output_directory.strip()
         path = os.path.join(directory, cls.get_web_file())
         return os.path.isfile(path)
-    
