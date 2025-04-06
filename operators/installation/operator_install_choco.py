@@ -10,12 +10,14 @@ class WEB_OT_OperatorInstallChoco(OperatorScriptBase):
     bl_label = "Install Chocolatey"
     bl_description = "Install Chocolatey which is a package manager for Windows that simplifies the installation, update, and management of software packages and dependencies"
 
+    '''
     def __init__(self):
         super().__init__()
         #FIXME: https://blender.stackexchange.com/questions/322779/how-can-i-get-info-report-to-show-up-before-subprocess-call
         #msg = "Installing Chocolatey... Please be patient as this may take a few moments."
         #print(msg)
         #self.report({'INFO'}, msg)
+    '''
 
     def draw(self, context) -> None:
         self.message = "Proceed with Chocolatey Installation?|This may take several minutes.,,INFO|Please wait while installation completes.,,INFO"
